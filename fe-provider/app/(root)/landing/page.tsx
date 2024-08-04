@@ -20,18 +20,22 @@ export default function Landing() {
   }, [publicKey, router]);
 
   const words = [
-    { text: "Empower", className: "text-white"},
-    { text: "Your" , className: "text-white"},
-    { text: "Projects",className: "text-white"},
-    { text: "with" , className: "text-white"},
+    { text: "Empower", className: "text-white" },
+    { text: "Your", className: "text-white" },
+    { text: "Projects", className: "text-white" },
+    { text: "with", className: "text-white" },
     { text: "Solana Payments.", className: "text-blue-500 dark:text-blue-500" },
   ];
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
-      <p className="text-blue-500 font-bold font-sans dark:text-neutral-200 sm:text-base text-3xl">
-        UpChain
-      </p>
+      <div className="text-blue-500 font-bold font-sans dark:text-neutral-200 text-3xl text-center ">
+        UpChain (Seller) <br />
+        <div className="sm:text-base mt-2 pb-5">
+          If you're a developer looking for gigs click{" "}
+          <a className="text-slate-300 underline" href="https://chatgpt.com/">here!</a>
+        </div>
+      </div>
       <TypewriterEffectSmooth words={words} />
       <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4">
         {publicKey ? <WalletDisconnectButton /> : <WalletMultiButton />}

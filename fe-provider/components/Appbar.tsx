@@ -20,21 +20,20 @@ export default function Appbar() {
       <div className="flex gap-4">
         <button
           onClick={() => router.push("/postjob")}
-          className="px-6 py-2 rounded-full bg-gradient-to-b from-blue-500 to-blue-600 text-white focus:ring-2 focus:ring-blue-400 hover:shadow-xl transition duration-200"
+          className="inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 "
         >
           Post a Job
         </button>
-
         <button
           onClick={() => router.push("/responses")}
-          className="px-7 py-2 rounded-full bg-gradient-to-b from-green-400 to-green-500 text-white focus:ring-2 focus:ring-blue-400 hover:shadow-xl transition duration-200"
+          className="inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 "
         >
           Job Responses
         </button>
 
         <button
           onClick={handleDisconnect}
-          className="px-8 py-2 rounded-md bg-red-500 text-white- font-bold transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-teal-500"
+          className="px-3 py-1 rounded-md bg-red-500 font-semibold font-mono transition duration-200 hover:bg-white hover:text-black border-2 border-transparent hover:border-teal-500"
         >
           Disconnect Wallet
         </button>
