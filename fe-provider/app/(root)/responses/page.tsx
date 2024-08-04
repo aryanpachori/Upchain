@@ -1,10 +1,10 @@
 import ResponseCard from "@/components/ResponseCard";
-import { CardTitle } from "@/components/ui/card";
+
 
 export default function Component() {
   return (
-    <div className="bg-gray-900 pb-5">
-      <h1 className="text-2xl font-bold text-center p-5 text-white">
+    <div className="bg-gray-900 pb-5 ">
+      <h1 className="text-2xl font-bold text-center pt-10  text-white">
         JOB RESPONSES
       </h1>
 
@@ -26,15 +26,7 @@ export default function Component() {
         skills={["js", "ts"]}
         contact={2929292}
       />
-        <ResponseCard
-        name={"aryyan"}
-        coverletter={
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-        }
-        date={Date()}
-        skills={["js", "ts"]}
-        contact={2929292}
-      />
+        
     </div>
   );
 }

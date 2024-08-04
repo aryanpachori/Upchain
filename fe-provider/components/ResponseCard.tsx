@@ -8,46 +8,55 @@ interface ResponseCardProps {
   contact: number | string;
 }
 
-export default function ResponseCard({ name, date, coverletter, skills, contact }: ResponseCardProps) {
+export default function ResponseCard({
+  name,
+  date,
+  coverletter,
+  skills,
+  contact,
+}: ResponseCardProps) {
   return (
-    <Card className="w-full max-w-4xl mx-auto mb-5 ">
-      <CardHeader>
-        
-      </CardHeader>
-      <CardContent className="grid gap-6">
-        <div className="border rounded-lg overflow-hidde">
-          <div className="flex items-center justify-between bg-muted px-4 py-3 bg-gray-900">
-            <div className="font-medium ">{name}</div>
+    <Card className="w-full max-w-4xl mx-auto mb-4 bg-gray-900 text-white border border-gray-900">
+      <CardHeader></CardHeader>
+      <CardContent className="grid gap-4 pb-2 ">
+        <div className="border border-gray-800 rounded-lg overflow-hidden bg-gray-800">
+          <div className="flex items-center justify-between px-4 py-3 bg-gray-700 border-b border-gray-800">
+            <div className="font-bold text-lg">{name}</div> {/* Added bold and increased font size */}
             <div className="flex items-center gap-2">
-              <button className="px-4 py-2 rounded-md border border-neutral-300 font-semibold bg-green-400 text-neutral-500 text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
+              <button className="px-4 py-2 rounded-md font-semibold bg-green-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
                 Approve
               </button>
-              <button className="px-4 py-2 rounded-md border border-neutral-300 font-semibold bg-red-400 text-neutral-500 text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
+              <button className="px-4 py-2 rounded-md font-semibold bg-red-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
                 Reject
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-10 pr-7">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-8 pr-6">
             <div className="space-y-2">
-              <div className="text-sm text-muted-foreground font-bold">Date Applied</div>
+              <div className="text-sm text-gray-400 font-bold">Date Applied</div>
               <div>{date}</div>
             </div>
             <div className="space-y-2">
-              <div className="text-sm text-muted-foreground font-bold">Skills</div>
+              <div className="text-sm text-gray-400 font-bold">Skills</div>
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill, index) => (
-                  <span key={index} className="bg-gray-200 text-gray-800 py-1 px-3 rounded-full text-sm">{skill}</span>
+                  <span
+                    key={index}
+                    className="bg-gray-600 text-gray-200 py-1 px-3 rounded-full text-sm"
+                  >
+                    {skill}
+                  </span>
                 ))}
               </div>
             </div>
             <div className="space-y-2 col-span-2">
-              <div className="text-sm text-muted-foreground font-bold">Cover Letter</div>
-              <div className="prose text-muted-foreground max-w-none">
+              <div className="text-sm text-gray-400 font-bold">Cover Letter</div>
+              <div className="prose text-gray-300 max-w-none">
                 <p>{coverletter}</p>
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-sm text-muted-foreground font-bold">Contact</div>
+              <div className="text-sm text-gray-400 font-bold">Contact</div>
               <div>{contact}</div>
             </div>
           </div>
@@ -56,4 +65,3 @@ export default function ResponseCard({ name, date, coverletter, skills, contact 
     </Card>
   );
 }
-
