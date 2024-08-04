@@ -24,7 +24,6 @@ export default function Component() {
         }
         amount={"100 SOL"}
       />
-      
     </div>
   );
 }

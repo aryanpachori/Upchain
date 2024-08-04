@@ -1,3 +1,5 @@
+"use client";
+import { useRouter } from "next/navigation";
 interface jobsCardProps {
   title: string;
   description: string;
@@ -10,6 +12,7 @@ export default function JobsCard({
   requirements,
   amount,
 }: jobsCardProps) {
+  const router = useRouter();
   return (
     <div className="mb-5">
       <div className="flex flex-col gap-8">
@@ -28,11 +31,12 @@ export default function JobsCard({
               <p>{amount}</p>
             </div>
             <button
-                type="submit"
-                className="px-8 py-0.5  border-2 border-black dark:border-white uppercase bg-green-600 text-black transition duration-200 text-sm shadow-[1px_1px_rgba(0,0,0),2px_2px_rgba(0,0,0),3px_3px_rgba(0,0,0),4px_4px_rgba(0,0,0),5px_5px_0px_0px_rgba(0,0,0)] dark:shadow-[1px_1px_rgba(255,255,255),2px_2px_rgba(255,255,255),3px_3px_rgba(255,255,255),4px_4px_rgba(255,255,255),5px_5px_0px_0px_rgba(255,255,255)] "
-              >
-               Apply
-              </button>
+              onClick={() => router.push("/applicationForm")}
+              type="submit"
+              className="px-8 py-0.5  border-2 border-black dark:border-white uppercase bg-green-600 text-black transition duration-200 text-sm shadow-[1px_1px_rgba(0,0,0),2px_2px_rgba(0,0,0),3px_3px_rgba(0,0,0),4px_4px_rgba(0,0,0),5px_5px_0px_0px_rgba(0,0,0)] dark:shadow-[1px_1px_rgba(255,255,255),2px_2px_rgba(255,255,255),3px_3px_rgba(255,255,255),4px_4px_rgba(255,255,255),5px_5px_0px_0px_rgba(255,255,255)] "
+            >
+              Apply
+            </button>
           </div>
         </div>
       </div>
