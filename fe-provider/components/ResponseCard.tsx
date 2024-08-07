@@ -24,10 +24,10 @@ export default function ResponseCard({
             <div className="font-bold text-lg">{name}</div> {/* Added bold and increased font size */}
             <div className="flex items-center gap-2">
               <button className="px-4 py-2 rounded-md font-semibold bg-green-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
-                Approve
+                APPROVE
               </button>
               <button className="px-4 py-2 rounded-md font-semibold bg-red-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
-                Reject
+                REJECT
               </button>
             </div>
           </div>
