@@ -1,11 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-export default function SubmissionCard() {
+interface submissionCardProps {
+  JobId: number;
+  name: string;
+  link: string;
+}
+export default function SubmissionCard({
+  JobId,
+  name,
+  link,
+}: submissionCardProps) {
+  function CopyToClipboard(url: string) {
+    navigator.clipboard.writeText(link);
+    alert("Copied to clipboard!");
+  }
+
   return (
     <div className="bg-gray-900 rounded-lg p-6 text-white m-3  ">
       <div className="flex items-center justify-between mb-4">
-        <div className="font-medium">Job ID: 12345</div>
-        <div className="font-medium">John Doe</div>
+        <div className="font-medium">
+          <span>Job ID:</span> {JobId}
+        </div>
+        <div className="font-medium uppercase  text-blue-500">{name}</div>
         <div className="flex items-center space-x-2">
           <button className="px-2 py-2 rounded-md font-semibold bg-green-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
             ACCEPT
@@ -18,16 +34,13 @@ export default function SubmissionCard() {
       <div className="flex items-center font-medium">
         <Input
           type="text"
-          value="https://example.com/john-doe-portfolio"
+          value={link}
           readOnly
           className=" text-black flex-1 bg-white rounded-md shadow-sm border-gray-300"
         />
         <button
           onClick={() => {
-            navigator.clipboard.writeText(
-              "https://example.com/john-doe-portfolio"
-            );
-            alert("Copied to clipboard!")
+            CopyToClipboard(link);
           }}
           className=" ml-2 bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6  text-white inline-block"
         >
