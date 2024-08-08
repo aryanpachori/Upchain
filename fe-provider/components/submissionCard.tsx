@@ -1,30 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-interface submissionCardProps {
+
+interface SubmissionCardProps {
   JobId: number;
   name: string;
   link: string;
 }
-export default function SubmissionCard({
-  JobId,
-  name,
-  link,
-}: submissionCardProps) {
+
+export default function SubmissionCard({ JobId, name, link }: SubmissionCardProps) {
   function CopyToClipboard(url: string) {
     navigator.clipboard.writeText(link);
     alert("Copied to clipboard!");
   }
 
   return (
-    <div className="bg-gray-900 rounded-lg p-6 text-white m-3  ">
+    <div className="w-full bg-gray-900 rounded-lg p-6 text-white my-3">
       <div className="flex items-center justify-between mb-4">
         <div className="font-medium">
           <span>Job ID:</span> {JobId}
         </div>
-        <div className="font-medium uppercase  text-blue-500">{name}</div>
+        <div className="font-medium uppercase text-blue-500">{name}</div>
         <div className="flex items-center space-x-2">
           <button className="px-2 py-2 rounded-md font-semibold bg-green-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
-            ACCEPT
+            APPROVE
           </button>
           <button className="px-2 py-2 rounded-md font-semibold bg-red-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
             REJECT
@@ -36,13 +34,13 @@ export default function SubmissionCard({
           type="text"
           value={link}
           readOnly
-          className=" text-black flex-1 bg-white rounded-md shadow-sm border-gray-300"
+          className="flex-1 text-black bg-white rounded-md shadow-sm border-gray-300"
         />
         <button
           onClick={() => {
             CopyToClipboard(link);
           }}
-          className=" ml-2 bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6  text-white inline-block"
+          className="ml-2 bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6 text-white inline-block"
         >
           <span className="absolute inset-0 overflow-hidden rounded-full">
             <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />

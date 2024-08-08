@@ -4,7 +4,7 @@ export default function Component() {
       <div className="container mx-auto max-w-4xl py-12 px-4">
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold">Post a Job</h1>
+            <h1 className="text-3xl font-bold font-mono text-green-500">Post a Job</h1>
             <p className="text-lg text-blue-400">Upchain.</p>
           </div>
           <div>

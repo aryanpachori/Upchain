@@ -1,10 +1,9 @@
 import ResponseCard from "@/components/ResponseCard";
 
-
 export default function Component() {
   return (
     <div className="bg-gray-900 pb-5 ">
-      <h1 className="text-2xl font-bold text-center pt-10  text-white">
+      <h1 className="text-3xl font-bold text-center pt-10 font-mono text-green-500">
         JOB RESPONSES
       </h1>
 
@@ -26,7 +25,6 @@ export default function Component() {
         skills={["js", "ts"]}
         contact={2929292}
       />
-        
     </div>
   );
 }

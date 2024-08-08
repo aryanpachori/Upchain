@@ -16,7 +16,10 @@ export default function Component() {
             </div>
             <div className="px-6 py-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <SubmissionCard JobId={12454} name="aryan" link="google.com"/>
+                <SubmissionCard JobId={12454} name="aryan pachori" link="google.com"/>
+                <SubmissionCard JobId={12454} name="aryan pachori" link="google.com"/>
+                <SubmissionCard JobId={12454} name="aryan pachori" link="google.com"/>
+                <SubmissionCard JobId={12454} name="aryan pachori" link="google.com"/>
                 
               </div>
             </div>

@@ -20,9 +20,12 @@ export default function Landing() {
   }, [publicKey, router]);
 
   const words = [
-    { text: "Empower", className: "text-white" },
-    { text: "Your", className: "text-white" },
-    { text: "Projects", className: "text-white" },
+    { text: "Find", className: "text-white" },
+    { text: "gigs", className: "text-white" },
+    { text: "and", className: "text-white" },
+    { text: "get", className: "text-white" },
+    { text: "paid", className: "text-white" },
+    { text: "effortlessly", className: "text-white" },
     { text: "with", className: "text-white" },
     { text: "Solana Payments.", className: "text-blue-500 dark:text-blue-500" },
   ];

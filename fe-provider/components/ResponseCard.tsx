@@ -21,10 +21,10 @@ export default function ResponseCard({
       <CardContent className="grid gap-4 pb-2 ">
         <div className="border border-gray-800 rounded-lg overflow-hidden bg-gray-800">
           <div className="flex items-center justify-between px-4 py-3 bg-gray-700 border-b border-gray-800">
-            <div className="font-bold text-lg">{name}</div> {/* Added bold and increased font size */}
+            <div className="font-bold text-lg uppercase">{name}</div> {/* Added bold and increased font size */}
             <div className="flex items-center gap-2">
               <button className="px-4 py-2 rounded-md font-semibold bg-green-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
-                APPROVE
+                ACCEPT
               </button>
               <button className="px-4 py-2 rounded-md font-semibold bg-red-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
                 REJECT
