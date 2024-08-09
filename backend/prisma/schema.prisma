@@ -12,3 +12,68 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Provider{
+   id Int @id @default(autoincrement())
+   address String @unique
+   jobs Job[]
+   
+}
+
+model Developer{
+  id Int @id @default(autoincrement())
+  address String @unique
+  jobs Job[]
+  application Application[]
+  contracts Contract[] 
+  
+}
+
+model Job{
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  requirements String
+  Amount Float
+  jobProviderId Int
+  developerId Int?
+  
+  jobProvider Provider @relation(fields: [jobProviderId],references: [id])
+  developer Developer? @relation(fields: [developerId],references: [id])
+
+  applications Application[]
+  contract      Contract?
+}
+
+model Application{
+  id Int @id @default(autoincrement())
+  name String
+  Skills String[]
+  CoverLetter String
+  ContactInforamtion String 
+  DateApplied  DateTime   @default(now())
+  JobId Int
+  DeveloperId Int
+
+  job Job @relation(fields: [JobId],references: [id])
+  developer Developer @relation(fields: [DeveloperId],references: [id])
+}
+
+model Contract{
+  id Int @id @default(autoincrement())
+  jobId Int  @unique
+  DeveloperId Int
+  status ContractStatus @default(PENDING)
+  submissonLink String?
+ 
+  job Job @relation(fields: [jobId],references: [id])
+  developer Developer @relation(fields: [DeveloperId],references: [id])
+  
+}
+
+
+enum ContractStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
