@@ -8,16 +8,33 @@ import {
   WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
+import axios from "axios";
+import { BACKEND_URL } from "@/utils";
 
 export default function Landing() {
-  const { publicKey } = useWallet();
+  const { publicKey, signMessage } = useWallet();
   const router = useRouter();
+  async function signNsend() {
+    if (!publicKey) {
+      return;
+    }
+    const message = new TextEncoder().encode("Signing in to upchain(devs)");
+    const signature = await signMessage?.(message);
+    const signatureArray = signature ? Array.from(signature) : []; 
 
-  useEffect(() => {
-    if (publicKey) {
+    const response = await axios.post(`${BACKEND_URL}/signin`, {
+      publicKey: publicKey?.toString(),
+      signature : signatureArray,
+    });
+    if (response.status === 200) {
+      localStorage.setItem("token", response.data.token);
       router.push("/jobs");
     }
-  }, [publicKey, router]);
+  }
+
+  useEffect(() => {
+    signNsend();
+  }, [publicKey]);
 
   const words = [
     { text: "Find", className: "text-white" },
@@ -33,10 +50,13 @@ export default function Landing() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
       <div className="text-blue-500 font-bold font-sans dark:text-neutral-200 text-3xl text-center ">
-        UpChain (Devs)<br />
+        UpChain (Devs)
+        <br />
         <div className="sm:text-base mt-2 pb-5">
           If you're a seller looking for developers, click{" "}
-          <a className="text-slate-300 underline" href="https://chatgpt.com/">here!</a>
+          <a className="text-slate-300 underline" href="https://chatgpt.com/">
+            here!
+          </a>
         </div>
       </div>
       <TypewriterEffectSmooth words={words} />

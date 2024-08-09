@@ -8,17 +8,32 @@ import {
   WalletDisconnectButton,
   WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
-
+import axios from "axios";
+import { BACKEND_URL } from "@/utils";
 export default function Landing() {
-  const { publicKey } = useWallet();
+  const { publicKey, signMessage } = useWallet();
   const router = useRouter();
 
-  useEffect(() => {
-    if (publicKey) {
+  async function signNsend() {
+    if (!publicKey) {
+      return;
+    }
+    const message = new TextEncoder().encode("Signing in to upchain(seller)");
+    const signature = await signMessage?.(message);
+    const response = await axios.post(`${BACKEND_URL}/signin`, {
+      publicKey: publicKey?.toString(),
+      signature,
+    });
+    if (response.status === 200) {
+      localStorage.setItem("token", response.data.token);
       router.push("/postjob");
     }
-  }, [publicKey, router]);
-  
+  }
+
+  useEffect(() => {
+    signNsend();
+  }, [publicKey]);
+
   const words = [
     { text: "Find", className: "text-white" },
     { text: "gigs", className: "text-white" },
@@ -36,7 +51,9 @@ export default function Landing() {
         UpChain (Seller) <br />
         <div className="sm:text-base mt-2 pb-5">
           If you're a developer looking for gigs click{" "}
-          <a className="text-slate-300 underline" href="https://chatgpt.com/">here!</a>
+          <a className="text-slate-300 underline" href="https://chatgpt.com/">
+            here!
+          </a>
         </div>
       </div>
       <TypewriterEffectSmooth words={words} />

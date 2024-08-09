@@ -6,6 +6,7 @@ export default function Appbar() {
   const { disconnect } = useWallet();
   const router = useRouter();
   const handleDisconnect = () => {
+    localStorage.removeItem("token");
     disconnect();
     router.push("/");
   };

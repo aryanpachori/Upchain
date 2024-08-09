@@ -13,23 +13,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Provider{
+model provider{
    id Int @id @default(autoincrement())
    address String @unique
-   jobs Job[]
+   Jobs job[]
    
 }
 
-model Developer{
+model developer{
   id Int @id @default(autoincrement())
   address String @unique
-  jobs Job[]
-  application Application[]
-  contracts Contract[] 
+  Jobs job[]
+  Application application[]
+  Contracts contract[] 
   
 }
 
-model Job{
+model job{
   id Int @id @default(autoincrement())
   title String
   description String
@@ -38,14 +38,14 @@ model Job{
   jobProviderId Int
   developerId Int?
   
-  jobProvider Provider @relation(fields: [jobProviderId],references: [id])
-  developer Developer? @relation(fields: [developerId],references: [id])
+  JobProvider provider @relation(fields: [jobProviderId],references: [id])
+  Developer developer? @relation(fields: [developerId],references: [id])
 
-  applications Application[]
-  contract      Contract?
+  Applications application[]
+  Contract      contract?
 }
 
-model Application{
+model application{
   id Int @id @default(autoincrement())
   name String
   Skills String[]
@@ -55,24 +55,24 @@ model Application{
   JobId Int
   DeveloperId Int
 
-  job Job @relation(fields: [JobId],references: [id])
-  developer Developer @relation(fields: [DeveloperId],references: [id])
+  Job job @relation(fields: [JobId],references: [id])
+  Developer developer @relation(fields: [DeveloperId],references: [id])
 }
 
-model Contract{
+model contract{
   id Int @id @default(autoincrement())
   jobId Int  @unique
   DeveloperId Int
-  status ContractStatus @default(PENDING)
+  status contractStatus @default(PENDING)
   submissonLink String?
  
-  job Job @relation(fields: [jobId],references: [id])
-  developer Developer @relation(fields: [DeveloperId],references: [id])
+  Job job @relation(fields: [jobId],references: [id])
+  Developer developer @relation(fields: [DeveloperId],references: [id])
   
 }
 
 
-enum ContractStatus {
+enum contractStatus {
   PENDING
   IN_PROGRESS
   COMPLETED
