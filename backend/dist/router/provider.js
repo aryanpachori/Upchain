@@ -18,8 +18,33 @@ const express_1 = require("express");
 const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
+const middleware_1 = require("./middleware");
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
+router.post("/postjob", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { title, description, requirements, amount } = req.body;
+    //@ts-ignore
+    const jobProviderId = req.providerId;
+    if (!title || !description || !requirements || !amount) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+    try {
+        const newJob = yield prisma.job.create({
+            data: {
+                title,
+                description,
+                requirements,
+                amount: Number(amount),
+                jobProviderId,
+            },
+        });
+        res.status(201).json(newJob);
+    }
+    catch (e) {
+        console.error("Error creating job:", e);
+        res.status(500).json({ message: "Failed to create job" });
+    }
+}));
 router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { publicKey, signature } = req.body;
     const message = new TextEncoder().encode("Signing in to upchain(seller)");

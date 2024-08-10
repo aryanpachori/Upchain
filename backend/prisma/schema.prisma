@@ -34,7 +34,7 @@ model job{
   title String
   description String
   requirements String
-  Amount Float
+  amount Int
   jobProviderId Int
   developerId Int?
   
@@ -49,9 +49,9 @@ model application{
   id Int @id @default(autoincrement())
   name String
   Skills String[]
-  CoverLetter String
-  ContactInforamtion String 
-  DateApplied  DateTime   @default(now())
+  coverLetter String
+  contactInforamtion String 
+  dateApplied  DateTime   @default(now())
   JobId Int
   DeveloperId Int
 

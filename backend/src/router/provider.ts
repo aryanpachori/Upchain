@@ -4,9 +4,36 @@ import { Router } from "express";
 import nacl from "tweetnacl";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
+import { middleware_provider } from "./middleware";
 
 const router = Router();
 const prisma = new PrismaClient();
+
+router.post("/postjob", middleware_provider, async (req, res) => {
+  const { title, description, requirements, amount } = req.body;
+  //@ts-ignore
+  const jobProviderId = req.providerId;
+
+  if (!title || !description || !requirements || !amount) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  try {
+    const newJob = await prisma.job.create({
+      data: {
+        title,
+        description,
+        requirements,
+        amount : Number(amount),
+        jobProviderId,
+      },
+    });
+    res.status(201).json(newJob);
+  } catch (e) {
+    console.error("Error creating job:", e);
+    res.status(500).json({ message: "Failed to create job" });
+  }
+});
+
 router.post("/signin", async (req, res) => {
   const { publicKey, signature } = req.body;
   const message = new TextEncoder().encode("Signing in to upchain(seller)");
@@ -18,7 +45,7 @@ router.post("/signin", async (req, res) => {
   );
 
   if (!result) {
-   return  res.status(401).json({ message: "Invalid signature" });
+    return res.status(401).json({ message: "Invalid signature" });
   }
 
   const existingUser = await prisma.provider.findFirst({
