@@ -9,9 +9,67 @@ import { middleware_dev } from "./middleware";
 const router = Router();
 const prisma = new PrismaClient();
 
-router.get("/jobs", middleware_dev, async (req, res) => {
+router.post("/application", middleware_dev, async (req, res) => {
+  const { name, skills, coverletter, contactInfo, jobId } = req.body;
+  //@ts-ignore
+  const developerId = req.devId;
+
+  if (!name || !skills || !coverletter || !contactInfo || !jobId) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
   try {
+    const job = await prisma.job.findFirst({
+      where: {
+        id: Number(jobId),
+      },
+    });
+
+    if (!job) {
+      return res.status(400).json({ message: "Job doesn't exist" });
+    }
+
+    const application = await prisma.application.create({
+      data: {
+        name: name,
+        Skills: skills,
+        coverLetter: coverletter,
+        contactInforamtion: contactInfo,
+        JobId: parseInt(jobId, 10),
+        dateApplied: new Date(),
+        DeveloperId: developerId,
+      },
+    });
+
+    res
+      .status(201)
+      .json({ message: "Application submitted successfully", application });
+  } catch (e: any) {
+    console.error("Error creating application:", e);
+  }
+});
+
+router.get("/jobs", middleware_dev, async (req, res) => {
+  //@ts-ignore
+  const developerId = req.devId;
+  try {
+    const appliedJob = await prisma.application.findMany({
+      where: {
+        DeveloperId: developerId,
+      },
+      select: {
+        JobId: true,
+      },
+    });
+    const appliedJobIds = appliedJob.map((application) => application.JobId);
+
     const jobs = await prisma.job.findMany({
+      where: {
+        id: {
+          notIn: appliedJobIds,
+        },
+      },
+
       include: {
         JobProvider: true,
       },

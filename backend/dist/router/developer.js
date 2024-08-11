@@ -21,9 +21,60 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const middleware_1 = require("./middleware");
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
-router.get("/jobs", middleware_1.middleware_dev, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/application", middleware_1.middleware_dev, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name, skills, coverletter, contactInfo, jobId } = req.body;
+    //@ts-ignore
+    const developerId = req.devId;
+    if (!name || !skills || !coverletter || !contactInfo || !jobId) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
     try {
+        const job = yield prisma.job.findFirst({
+            where: {
+                id: Number(jobId),
+            },
+        });
+        if (!job) {
+            return res.status(400).json({ message: "Job doesn't exist" });
+        }
+        const application = yield prisma.application.create({
+            data: {
+                name: name,
+                Skills: skills,
+                coverLetter: coverletter,
+                contactInforamtion: contactInfo,
+                JobId: parseInt(jobId, 10),
+                dateApplied: new Date(),
+                DeveloperId: developerId,
+            },
+        });
+        res
+            .status(201)
+            .json({ message: "Application submitted successfully", application });
+    }
+    catch (e) {
+        console.error("Error creating application:", e);
+    }
+}));
+router.get("/jobs", middleware_1.middleware_dev, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const developerId = req.devId;
+    try {
+        const appliedJob = yield prisma.application.findMany({
+            where: {
+                DeveloperId: developerId,
+            },
+            select: {
+                JobId: true,
+            },
+        });
+        const appliedJobIds = appliedJob.map((application) => application.JobId);
         const jobs = yield prisma.job.findMany({
+            where: {
+                id: {
+                    notIn: appliedJobIds,
+                },
+            },
             include: {
                 JobProvider: true,
             },
