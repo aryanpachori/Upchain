@@ -21,6 +21,24 @@ const config_1 = require("../config");
 const middleware_1 = require("./middleware");
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
+router.get("/jobs", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const jobProviderId = req.providerId;
+    try {
+        if (!jobProviderId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const jobs = yield prisma.job.findMany({
+            where: {
+                jobProviderId: jobProviderId,
+            },
+        });
+        res.status(200).json(jobs);
+    }
+    catch (error) {
+        console.error("Error fetching jobs:", error);
+    }
+}));
 router.get("/application", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const responses = yield prisma.application.findMany({

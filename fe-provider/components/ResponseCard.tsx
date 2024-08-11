@@ -6,6 +6,7 @@ interface ResponseCardProps {
   coverletter: string;
   skills: string[];
   contact: number | string;
+  jobId : number
 }
 
 export default function ResponseCard({
@@ -14,6 +15,7 @@ export default function ResponseCard({
   coverletter,
   skills=[],
   contact,
+  jobId
 }: ResponseCardProps) {
   return (
     <Card className="w-full max-w-4xl mx-auto mb-4 bg-gray-900 text-white border border-gray-900">
@@ -21,7 +23,8 @@ export default function ResponseCard({
       <CardContent className="grid gap-4 pb-2 ">
         <div className="border border-gray-800 rounded-lg overflow-hidden bg-gray-800">
           <div className="flex items-center justify-between px-4 py-3 bg-gray-700 border-b border-gray-800">
-            <div className="font-bold text-lg uppercase">{name}</div>
+            <div className="font-bold text-lg uppercase">{name} <span className="text-red-400">[JOB ID: {jobId}] </span> 
+             </div>
             <div className="flex items-center gap-2">
               <button className="px-4 py-2 rounded-md font-semibold bg-green-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
                 ACCEPT

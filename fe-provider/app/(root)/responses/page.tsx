@@ -7,6 +7,7 @@ import axios from "axios";
 interface Responses {
   id: number;
   name: string;
+  JobId : number
   coverLetter: string;
   Skills: string[];
   contactInforamtion: string;
@@ -44,6 +45,7 @@ export default function Component() {
           <ResponseCard
             key={res.id} 
             name={res.name}
+            jobId={res.JobId}
             coverletter={res.coverLetter}
             date={res.dateApplied}
             contact={res.contactInforamtion}

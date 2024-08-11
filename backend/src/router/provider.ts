@@ -9,6 +9,24 @@ import { middleware_provider } from "./middleware";
 const router = Router();
 const prisma = new PrismaClient();
 
+router.get("/jobs", middleware_provider, async (req, res) => {
+  //@ts-ignore
+  const jobProviderId = req.providerId;
+  try {
+    if (!jobProviderId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const jobs = await prisma.job.findMany({
+      where: {
+        jobProviderId: jobProviderId,
+      },
+    });
+    res.status(200).json(jobs);
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+  }
+});
+
 router.get("/application", middleware_provider, async (req, res) => {
   try {
     const responses = await prisma.application.findMany({
