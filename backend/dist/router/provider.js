@@ -21,6 +21,21 @@ const config_1 = require("../config");
 const middleware_1 = require("./middleware");
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
+router.get("/application", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const responses = yield prisma.application.findMany({
+            include: {
+                Job: true,
+                Developer: true,
+            },
+        });
+        res.status(200).json(responses);
+    }
+    catch (error) {
+        console.error("Error fetching applications:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}));
 router.post("/postjob", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, description, requirements, amount } = req.body;
     //@ts-ignore

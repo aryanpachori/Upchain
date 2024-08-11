@@ -9,6 +9,21 @@ import { middleware_provider } from "./middleware";
 const router = Router();
 const prisma = new PrismaClient();
 
+router.get("/application", middleware_provider, async (req, res) => {
+  try {
+    const responses = await prisma.application.findMany({
+      include: {
+        Job: true,
+        Developer: true,
+      },
+    });
+    res.status(200).json(responses);
+  } catch (error) {
+    console.error("Error fetching applications:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.post("/postjob", middleware_provider, async (req, res) => {
   const { title, description, requirements, amount } = req.body;
   //@ts-ignore
@@ -23,7 +38,7 @@ router.post("/postjob", middleware_provider, async (req, res) => {
         title,
         description,
         requirements,
-        amount : Number(amount),
+        amount: Number(amount),
         jobProviderId,
       },
     });
