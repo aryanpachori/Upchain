@@ -84,6 +84,23 @@ router.post("/contract", middleware_1.middleware_provider, (req, res) => __await
                 status: "IN_PROGRESS",
             },
         });
+        yield prisma.application.updateMany({
+            where: {
+                JobId: jobId,
+                DeveloperId: DeveloperId,
+            },
+            data: {
+                status: "APPROVED"
+            },
+        });
+        yield prisma.job.update({
+            where: {
+                id: jobId,
+            },
+            data: {
+                developerId: DeveloperId,
+            },
+        });
         res.status(201).json(contract);
     }
     catch (error) {

@@ -20,12 +20,13 @@ interface Responses {
   Skills: string[];
   contactInforamtion: string;
   dateApplied: string;
+  status: "PENDING" | "APPROVED" | "REJECT";
 }
 
 export default function Component() {
   const [responses, setResponses] = useState<Responses[]>([]);
   const { publicKey, sendTransaction } = useWallet();
-  const [acceptedJobIds, setAcceptedJobIds] = useState<Set<number>>(new Set());
+
   console.log("Wallet publicKey:", publicKey?.toString());
 
   const { connection } = useConnection();
@@ -36,7 +37,9 @@ export default function Component() {
           Authorization: localStorage.getItem("token"),
         },
       });
-      setResponses(list.data);
+      setResponses(
+        list.data.filter((res: Responses) => res.status === "PENDING")
+      );
     } catch (e) {
       console.error("Error fetching responses", e);
     }
@@ -89,7 +92,6 @@ export default function Component() {
             },
           }
         );
-        setAcceptedJobIds(prev => new Set(prev.add(jobId))); 
         alert("Contract created successfully");
       } else {
         alert("Payment failed. Contract not created.");
@@ -115,37 +117,42 @@ export default function Component() {
       alert("Failed to delete application");
     }
   }
-
+  
   useEffect(() => {
     responseList();
+    const intervalId = setInterval(() => {
+      responseList(); 
+    }, 5000);
+
+    return () => clearInterval(intervalId);
   }, []);
-  const filteredResponses = responses.filter(res => !acceptedJobIds.has(res.JobId));
+
+
+  
+
   return (
     <div className="bg-gray-900 pb-5 min-h-screen">
       <h1 className="text-3xl font-bold text-center pt-10 font-mono text-green-500">
         JOB RESPONSES
       </h1>
-
-      {filteredResponses.length === 0 ? (
+      {responses.length === 0 ? (
         <div className=" underline text-center font-mono mt-20 h-screen max-w-full text-3xl text-red-500">No responses at this time^^</div>
       ) : (
-        filteredResponses
-          .filter(res => !acceptedJobIds.has(res.JobId)) 
-          .map(res => (
-            <ResponseCard
-              key={res.id}
-              name={res.name}
-              jobId={res.JobId}
-              DeveloperId={res.DeveloperId}
-              coverletter={res.coverLetter}
-              date={res.dateApplied}
-              contact={res.contactInforamtion}
-              skills={res.Skills}
-              onAccept={onAccept}
-              onReject={onReject}
-            />
-          ))
-      )}
+        responses.map((res) => (
+        <ResponseCard
+          key={res.id}
+          name={res.name}
+          jobId={res.JobId}
+          DeveloperId={res.DeveloperId}
+          coverletter={res.coverLetter}
+          date={res.dateApplied}
+          contact={res.contactInforamtion}
+          skills={res.Skills}
+          onAccept={onAccept}
+          onReject={onReject}
+        />
+      )))
+    }
     </div>
   );
 }

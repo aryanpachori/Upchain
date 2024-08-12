@@ -54,6 +54,7 @@ model application{
   dateApplied  DateTime   @default(now())
   JobId Int
   DeveloperId Int
+  status ApplicationStatus @default(PENDING)
 
   Job job @relation(fields: [JobId],references: [id])
   Developer developer @relation(fields: [DeveloperId],references: [id])
@@ -76,4 +77,9 @@ enum contractStatus {
   PENDING
   IN_PROGRESS
   COMPLETED
+}
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECT
 }

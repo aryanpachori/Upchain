@@ -81,11 +81,32 @@ router.post("/contract", middleware_provider, async (req, res) => {
         status: "IN_PROGRESS",
       },
     });
+
+    await prisma.application.updateMany({
+      where: {
+        JobId: jobId,
+        DeveloperId: DeveloperId,
+      },
+      data: {
+          status : "APPROVED"
+      },
+    });
+
+    await prisma.job.update({
+      where: {
+        id: jobId,
+      },
+      data: {
+        developerId: DeveloperId,
+      },
+    });
+
     res.status(201).json(contract);
   } catch (error) {
     console.error("Error creating contract:", error);
     res.status(500).json({ message: "Internal server error" });
   }
+ 
 });
 
 router.get("/jobs", middleware_provider, async (req, res) => {
