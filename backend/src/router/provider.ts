@@ -9,6 +9,85 @@ import { middleware_provider } from "./middleware";
 const router = Router();
 const prisma = new PrismaClient();
 
+
+router.get("/job/:jobId/amount", middleware_provider, async (req, res) => {
+  const { jobId } = req.params;
+
+  try {
+    const job = await prisma.job.findUnique({
+      where: { 
+        id: Number(jobId) 
+      },
+      select: 
+      { 
+        amount: true
+      },
+    });
+
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    res.status(200).json({ amount: job.amount });
+
+  } catch (error) {
+    console.error("Error fetching job amount:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
+
+router.delete("/application/:jobId/:developerId",async(req,res)=>{
+  const { jobId, developerId } = req.params;
+  if (!jobId || !developerId) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+  try{
+      await prisma.application.deleteMany({
+        where:{
+          JobId : Number(jobId),
+          DeveloperId :Number(developerId)
+        }
+      })
+      res.status(200).json({ message: "Application rejected successfully" });
+  }catch(error){
+    console.error("Error rejecting application:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+})
+
+router.post("/contract", middleware_provider, async (req, res) => {
+  const { jobId, DeveloperId } = req.body;
+  if (!jobId || !DeveloperId) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+  try {
+    const existingContract = await prisma.contract.findUnique({
+      where: {
+        jobId,
+      },
+    });
+    if (existingContract) {
+      return res
+        .status(400)
+        .json({ message: "Contract already exists for this job" });
+    }
+    const contract = await prisma.contract.create({
+      data: {
+        jobId: jobId,
+        DeveloperId: DeveloperId,
+        status: "IN_PROGRESS",
+      },
+    });
+    res.status(201).json(contract);
+  } catch (error) {
+    console.error("Error creating contract:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.get("/jobs", middleware_provider, async (req, res) => {
   //@ts-ignore
   const jobProviderId = req.providerId;
@@ -28,8 +107,28 @@ router.get("/jobs", middleware_provider, async (req, res) => {
 });
 
 router.get("/application", middleware_provider, async (req, res) => {
+  
+ 
   try {
+    //@ts-ignore
+    const jobProviderId = req.providerId;
+    const jobs = await prisma.job.findMany({
+      where: {
+        jobProviderId: jobProviderId,
+      },
+      select: {
+        id: true,
+      },
+    });
+    const jobIds = jobs.map(job => job.id);
+
     const responses = await prisma.application.findMany({
+
+      where:{
+        JobId:{
+          in :jobIds
+        },
+      },
       include: {
         Job: true,
         Developer: true,

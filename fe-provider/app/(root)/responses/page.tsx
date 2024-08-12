@@ -1,13 +1,21 @@
-"use client"
+"use client";
 import ResponseCard from "@/components/ResponseCard";
 import { BACKEND_URL } from "@/utils";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import {
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 
 interface Responses {
   id: number;
   name: string;
-  JobId : number
+  JobId: number;
+  DeveloperId: number;
   coverLetter: string;
   Skills: string[];
   contactInforamtion: string;
@@ -16,7 +24,10 @@ interface Responses {
 
 export default function Component() {
   const [responses, setResponses] = useState<Responses[]>([]);
+  const { publicKey, sendTransaction } = useWallet();
+  console.log("Wallet publicKey:", publicKey?.toString());
 
+  const { connection } = useConnection();
   async function responseList() {
     try {
       const list = await axios.get(`${BACKEND_URL}/application`, {
@@ -27,6 +38,79 @@ export default function Component() {
       setResponses(list.data);
     } catch (e) {
       console.error("Error fetching responses", e);
+    }
+  }
+  async function makePaymenttoParentWallet(amount: number) {
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: publicKey!,
+        toPubkey: new PublicKey("94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL"),
+        lamports: amount * LAMPORTS_PER_SOL,
+      })
+    );
+    const {
+      context: { slot: minContextSlot },
+      value: { blockhash, lastValidBlockHeight },
+    } = await connection.getLatestBlockhashAndContext();
+    const signature = await sendTransaction(transaction, connection, {
+      minContextSlot,
+    });
+
+    await connection.confirmTransaction({
+      blockhash,
+      lastValidBlockHeight,
+      signature,
+    });
+    return true;
+  }
+
+  async function onAccept(jobId: number, DeveloperId: number) {
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/job/${jobId}/amount`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      const amount = data.amount;
+
+      const paymentSuccess = await makePaymenttoParentWallet(amount);
+      if (paymentSuccess) {
+        await axios.post(
+          `${BACKEND_URL}/contract`,
+          {
+            jobId,
+            DeveloperId,
+          },
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+        alert("Contract created successfully");
+      } else {
+        alert("Payment failed. Contract not created.");
+      }
+      responseList();
+    } catch (error) {
+      console.error("Error creating contract:", error);
+      alert("Failed to create contract");
+    }
+  }
+
+  async function onReject(jobId: number, DeveloperId: number) {
+    try {
+      await axios.delete(`${BACKEND_URL}/application/${jobId}/${DeveloperId}`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      alert("Application rejected successfully");
+      responseList();
+    } catch (error) {
+      console.error("Error deleting application:", error);
+      alert("Failed to delete application");
     }
   }
 
@@ -40,20 +124,20 @@ export default function Component() {
         JOB RESPONSES
       </h1>
 
-      {
-        responses.map((res) => (
-          <ResponseCard
-            key={res.id} 
-            name={res.name}
-            jobId={res.JobId}
-            coverletter={res.coverLetter}
-            date={res.dateApplied}
-            contact={res.contactInforamtion}
-            skills={res.Skills}
-          />
-        ))
-     
-      }
+      {responses.map((res) => (
+        <ResponseCard
+          key={res.id}
+          name={res.name}
+          jobId={res.JobId}
+          DeveloperId={res.DeveloperId}
+          coverletter={res.coverLetter}
+          date={res.dateApplied}
+          contact={res.contactInforamtion}
+          skills={res.Skills}
+          onAccept={onAccept}
+          onReject={onReject}
+        />
+      ))}
     </div>
   );
 }
