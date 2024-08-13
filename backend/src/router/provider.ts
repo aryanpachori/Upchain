@@ -9,18 +9,46 @@ import { middleware_provider } from "./middleware";
 const router = Router();
 const prisma = new PrismaClient();
 
+router.get("/submission", middleware_provider, async (req, res) => {
+  //@ts-ignore
+  const jobProviderId = req.providerId;
+  try {
+    const submissions = await prisma.contract.findMany({
+      where: {
+        Job: {
+          jobProviderId: jobProviderId,
+        },
+        submissonLink: {
+          not: null,
+        },
+      },
+      select: {
+        id: true,
+        submissonLink: true,
+        Job: {
+          select: {
+            id : true,
+            title: true,
+          },
+        },
+      },
+    });
+    res.json(submissions);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching submissions" });
+  }
+});
 
 router.get("/job/:jobId/amount", middleware_provider, async (req, res) => {
   const { jobId } = req.params;
 
   try {
     const job = await prisma.job.findUnique({
-      where: { 
-        id: Number(jobId) 
+      where: {
+        id: Number(jobId),
       },
-      select: 
-      { 
-        amount: true
+      select: {
+        amount: true,
       },
     });
 
@@ -29,34 +57,30 @@ router.get("/job/:jobId/amount", middleware_provider, async (req, res) => {
     }
 
     res.status(200).json({ amount: job.amount });
-
   } catch (error) {
     console.error("Error fetching job amount:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-
-
-
-router.delete("/application/:jobId/:developerId",async(req,res)=>{
+router.delete("/application/:jobId/:developerId", async (req, res) => {
   const { jobId, developerId } = req.params;
   if (!jobId || !developerId) {
     return res.status(400).json({ message: "Missing required fields" });
   }
-  try{
-      await prisma.application.deleteMany({
-        where:{
-          JobId : Number(jobId),
-          DeveloperId :Number(developerId)
-        }
-      })
-      res.status(200).json({ message: "Application rejected successfully" });
-  }catch(error){
+  try {
+    await prisma.application.deleteMany({
+      where: {
+        JobId: Number(jobId),
+        DeveloperId: Number(developerId),
+      },
+    });
+    res.status(200).json({ message: "Application rejected successfully" });
+  } catch (error) {
     console.error("Error rejecting application:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-})
+});
 
 router.post("/contract", middleware_provider, async (req, res) => {
   const { jobId, DeveloperId } = req.body;
@@ -88,7 +112,7 @@ router.post("/contract", middleware_provider, async (req, res) => {
         DeveloperId: DeveloperId,
       },
       data: {
-          status : "APPROVED"
+        status: "APPROVED",
       },
     });
 
@@ -106,7 +130,6 @@ router.post("/contract", middleware_provider, async (req, res) => {
     console.error("Error creating contract:", error);
     res.status(500).json({ message: "Internal server error" });
   }
- 
 });
 
 router.get("/jobs", middleware_provider, async (req, res) => {
@@ -128,8 +151,6 @@ router.get("/jobs", middleware_provider, async (req, res) => {
 });
 
 router.get("/application", middleware_provider, async (req, res) => {
-  
- 
   try {
     //@ts-ignore
     const jobProviderId = req.providerId;
@@ -141,13 +162,12 @@ router.get("/application", middleware_provider, async (req, res) => {
         id: true,
       },
     });
-    const jobIds = jobs.map(job => job.id);
+    const jobIds = jobs.map((job) => job.id);
 
     const responses = await prisma.application.findMany({
-
-      where:{
-        JobId:{
-          in :jobIds
+      where: {
+        JobId: {
+          in: jobIds,
         },
       },
       include: {

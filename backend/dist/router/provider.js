@@ -21,15 +21,45 @@ const config_1 = require("../config");
 const middleware_1 = require("./middleware");
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
+router.get("/submission", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const jobProviderId = req.providerId;
+    try {
+        const submissions = yield prisma.contract.findMany({
+            where: {
+                Job: {
+                    jobProviderId: jobProviderId,
+                },
+                submissonLink: {
+                    not: null,
+                },
+            },
+            select: {
+                id: true,
+                submissonLink: true,
+                Job: {
+                    select: {
+                        id: true,
+                        title: true,
+                    },
+                },
+            },
+        });
+        res.json(submissions);
+    }
+    catch (error) {
+        res.status(500).json({ error: "Error fetching submissions" });
+    }
+}));
 router.get("/job/:jobId/amount", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { jobId } = req.params;
     try {
         const job = yield prisma.job.findUnique({
             where: {
-                id: Number(jobId)
+                id: Number(jobId),
             },
             select: {
-                amount: true
+                amount: true,
             },
         });
         if (!job) {
@@ -51,8 +81,8 @@ router.delete("/application/:jobId/:developerId", (req, res) => __awaiter(void 0
         yield prisma.application.deleteMany({
             where: {
                 JobId: Number(jobId),
-                DeveloperId: Number(developerId)
-            }
+                DeveloperId: Number(developerId),
+            },
         });
         res.status(200).json({ message: "Application rejected successfully" });
     }
@@ -90,7 +120,7 @@ router.post("/contract", middleware_1.middleware_provider, (req, res) => __await
                 DeveloperId: DeveloperId,
             },
             data: {
-                status: "APPROVED"
+                status: "APPROVED",
             },
         });
         yield prisma.job.update({
@@ -138,11 +168,11 @@ router.get("/application", middleware_1.middleware_provider, (req, res) => __awa
                 id: true,
             },
         });
-        const jobIds = jobs.map(job => job.id);
+        const jobIds = jobs.map((job) => job.id);
         const responses = yield prisma.application.findMany({
             where: {
                 JobId: {
-                    in: jobIds
+                    in: jobIds,
                 },
             },
             include: {
