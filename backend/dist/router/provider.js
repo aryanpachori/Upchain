@@ -21,6 +21,28 @@ const config_1 = require("../config");
 const middleware_1 = require("./middleware");
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
+router.post("/payment", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { contractId } = req.body;
+    try {
+        const contract = yield prisma.contract.findUnique({
+            where: {
+                id: contractId
+            },
+            include: {
+                Job: {
+                    select: {
+                        amount: true
+                    }
+                }
+            }
+        });
+        if ((contract === null || contract === void 0 ? void 0 : contract.status) !== "IN_PROGRESS") {
+            return res.json({ message: "Invalid" });
+        }
+    }
+    catch (e) {
+    }
+}));
 router.get("/submission", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const jobProviderId = req.providerId;

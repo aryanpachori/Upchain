@@ -1,4 +1,4 @@
-import { useConnection } from '@solana/wallet-adapter-react';
+
 import { PrismaClient } from "@prisma/client";
 import { PublicKey } from "@solana/web3.js";
 import { Router } from "express";
@@ -9,7 +9,7 @@ import { middleware_provider } from "./middleware";
 
 const router = Router();
 const prisma = new PrismaClient();
-const connection = useConnection();
+
 
 router.post("/payment",middleware_provider,async(req,res)=>{
      
