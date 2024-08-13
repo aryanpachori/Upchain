@@ -136,7 +136,7 @@ export default function Component() {
         JOB RESPONSES
       </h1>
       {responses.length === 0 ? (
-        <div className=" underline text-center font-mono mt-20 h-screen max-w-full text-3xl text-red-500">No responses at this time^^</div>
+        <div className=" underline text-center font-mono mt-20 h-screen max-w-full text-3xl text-red-500">No responses at this time:)</div>
       ) : (
         responses.map((res) => (
         <ResponseCard

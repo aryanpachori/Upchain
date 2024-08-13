@@ -29,7 +29,7 @@ export default function JobsCard({
               {title}
               <br />{" "}
               <span className="font-mono  text-red-400 text-base">
-                [JOB ID: {jobId}]
+                JOB ID: {jobId}
               </span>
             </h2>
             <p className="text-gray-400 mb-4">{description}</p>

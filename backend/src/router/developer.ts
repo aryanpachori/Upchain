@@ -9,6 +9,48 @@ import { middleware_dev } from "./middleware";
 const router = Router();
 const prisma = new PrismaClient();
 
+router.post("/submission", middleware_dev, async (req, res) => {
+  const { contractId, submissionLink } = req.body;
+  if (!submissionLink || !contractId) {
+    return res
+      .status(400)
+      .json({ error: "Submission link and contract ID are required." });
+  }
+  try {
+    const submission = await prisma.contract.update({
+      where: {
+        id: contractId,
+      },
+      data: {
+        submissonLink: submissionLink,
+      },
+    });
+    res.status(200).json(submission);
+  } catch (error) {
+    console.error("Error updating submission link:", error);
+    res.status(500).json({ error: "Failed to update submission link." });
+  }
+});
+
+router.get("/contract", middleware_dev, async (req, res) => {
+  //@ts-ignore
+  const developerId = req.devId;
+  try {
+    const contractInfo = await prisma.contract.findMany({
+      where: {
+        DeveloperId: developerId,
+      },
+      include: {
+        Job: true,
+      },
+    });
+    res.status(200).json(contractInfo);
+  } catch (error) {
+    console.error("Error fetching contracts and job details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.post("/application", middleware_dev, async (req, res) => {
   const { name, skills, coverletter, contactInfo, jobId } = req.body;
   //@ts-ignore
