@@ -3,7 +3,7 @@ import SubmissionCard from "@/components/submissionCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@/utils";
-import { headers } from "next/headers";
+
 interface submissionProps {
   id: number;
   JobId: number;
