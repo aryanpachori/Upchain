@@ -19,28 +19,79 @@ const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
 const middleware_1 = require("./middleware");
+const bs58_1 = __importDefault(require("bs58"));
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
+const parentWallet = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
+const connection = new web3_js_1.Connection(config_1.RPC_URL);
+router.post("/reject", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { contractId } = req.body;
+    if (!contractId) {
+        return res.status(400).json({ message: "Contract ID is required" });
+    }
+    try {
+        const updatedContract = yield prisma.contract.update({
+            where: {
+                id: contractId,
+            },
+            data: {
+                status: 'REJECTED'
+            },
+        });
+        res.json(updatedContract);
+    }
+    catch (error) {
+        console.error("Error processing rejection:", error);
+        res.status(500).json({ message: "Error processing rejection" });
+    }
+}));
 router.post("/payment", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { contractId } = req.body;
     try {
-        const contract = yield prisma.contract.findUnique({
-            where: {
-                id: contractId
-            },
-            include: {
-                Job: {
-                    select: {
-                        amount: true
-                    }
-                }
+        const payment = yield prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            const contract = yield tx.contract.findUnique({
+                where: {
+                    id: contractId,
+                },
+                include: {
+                    Job: {
+                        select: {
+                            amount: true,
+                        },
+                    },
+                    Developer: {
+                        select: {
+                            address: true,
+                        },
+                    },
+                },
+            });
+            if (!contract || contract.status !== "IN_PROGRESS") {
+                return res.status(400).json({ message: "Invalid contract status" });
             }
-        });
-        if ((contract === null || contract === void 0 ? void 0 : contract.status) !== "IN_PROGRESS") {
-            return res.json({ message: "Invalid" });
-        }
+            const transaction = new web3_js_1.Transaction().add(web3_js_1.SystemProgram.transfer({
+                fromPubkey: new web3_js_1.PublicKey(parentWallet),
+                toPubkey: new web3_js_1.PublicKey(contract.Developer.address),
+                lamports: contract.Job.amount * web3_js_1.LAMPORTS_PER_SOL,
+            }));
+            const keyPair = web3_js_1.Keypair.fromSecretKey(bs58_1.default.decode(config_1.privateKey));
+            const signature = yield (0, web3_js_1.sendAndConfirmTransaction)(connection, transaction, [keyPair]);
+            yield prisma.contract.update({
+                where: {
+                    id: contractId,
+                },
+                data: {
+                    status: "COMPLETED",
+                },
+            });
+            console.log(contract, signature);
+            return { contract, signature };
+        }));
+        res.json(payment);
     }
-    catch (e) {
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error processing payment" });
     }
 }));
 router.get("/submission", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -59,6 +110,7 @@ router.get("/submission", middleware_1.middleware_provider, (req, res) => __awai
             select: {
                 id: true,
                 submissonLink: true,
+                status: true,
                 Job: {
                     select: {
                         id: true,

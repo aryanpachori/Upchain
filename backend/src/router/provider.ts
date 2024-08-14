@@ -1,41 +1,101 @@
-
 import { PrismaClient } from "@prisma/client";
-import { PublicKey } from "@solana/web3.js";
+import {
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  sendAndConfirmTransaction,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import { Router } from "express";
 import nacl from "tweetnacl";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config";
+import { JWT_SECRET, privateKey, RPC_URL } from "../config";
 import { middleware_provider } from "./middleware";
-
+import bs58 from "bs58";
 const router = Router();
 const prisma = new PrismaClient();
+const parentWallet = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
+const connection = new Connection(RPC_URL);
 
+router.post("/reject", async (req, res) => {
+  const { contractId } = req.body;
 
-router.post("/payment",middleware_provider,async(req,res)=>{
-     
-  const {contractId} = req.body;
-  try{
-     const contract = await prisma.contract.findUnique({
-      where :{
-        id : contractId
-      },
-      include : {
-        Job :{
-          select :{
-            amount :true
-          }
-        }
-      }
-     })
-     if(contract?.status !== "IN_PROGRESS"){
-      return res.json({message : "Invalid"})
-     }
-    
-   
-  }catch(e){
-
+  if (!contractId) {
+    return res.status(400).json({ message: "Contract ID is required" });
   }
-})
+
+  try {
+    const updatedContract = await prisma.contract.update({
+      where: {
+        id: contractId,
+      },
+      data: {
+        status : 'REJECTED'
+      },
+    });
+    res.json(updatedContract);
+  } catch (error) {
+    console.error("Error processing rejection:", error);
+    res.status(500).json({ message: "Error processing rejection" });
+  }
+});
+
+router.post("/payment", middleware_provider, async (req, res) => {
+  const { contractId } = req.body;
+  try {
+    const payment = await prisma.$transaction(async (tx) => {
+      const contract = await tx.contract.findUnique({
+        where: {
+          id: contractId,
+        },
+        include: {
+          Job: {
+            select: {
+              amount: true,
+            },
+          },
+          Developer: {
+            select: {
+              address: true,
+            },
+          },
+        },
+      });
+      if (!contract || contract.status !== "IN_PROGRESS" ) {
+        return res.status(400).json({ message: "Invalid contract status" });
+      }
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: new PublicKey(parentWallet),
+          toPubkey: new PublicKey(contract.Developer.address),
+          lamports: contract.Job.amount * LAMPORTS_PER_SOL,
+        })
+      );
+      const keyPair = Keypair.fromSecretKey(bs58.decode(privateKey));
+      const signature = await sendAndConfirmTransaction(
+        connection,
+        transaction,
+        [keyPair]
+      );
+      await prisma.contract.update({
+        where: {
+          id: contractId,
+        },
+        data: {
+          status: "COMPLETED",
+        },
+      });
+      console.log(contract, signature);
+      return { contract, signature };
+    });
+    res.json(payment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error processing payment" });
+  }
+});
 
 router.get("/submission", middleware_provider, async (req, res) => {
   //@ts-ignore
@@ -53,9 +113,10 @@ router.get("/submission", middleware_provider, async (req, res) => {
       select: {
         id: true,
         submissonLink: true,
+        status : true,
         Job: {
           select: {
-            id : true,
+            id: true,
             title: true,
           },
         },

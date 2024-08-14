@@ -10,7 +10,7 @@ interface ContractCardProps {
   jobID: number;
   title: string;
   description: string;
-  status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+  status: "REJECTED" | "IN_PROGRESS" | "COMPLETED";
   submissonLink: string | null; 
   onSubmit: (link: string) => void;
 }
@@ -29,14 +29,14 @@ export default function ContractCard({
     onSubmit(link);
   }
 
-  const getBadgeColor = (status: "PENDING" | "IN_PROGRESS" | "COMPLETED") => {
+  const getBadgeColor = (status: "REJECTED" | "IN_PROGRESS" | "COMPLETED") => {
     switch (status) {
       case "COMPLETED":
         return "bg-green-500 text-green-900";
       case "IN_PROGRESS":
         return "bg-yellow-500 text-yellow-900";
       default:
-        return "bg-gray-500 text-gray-900";
+        return "bg-red-500 text-gray-900";
     }
   };
   

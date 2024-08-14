@@ -64,7 +64,7 @@ model contract{
   id Int @id @default(autoincrement())
   jobId Int  @unique
   DeveloperId Int
-  status contractStatus @default(PENDING)
+  status contractStatus @default(IN_PROGRESS)
   submissonLink String?
  
   Job job @relation(fields: [jobId],references: [id])
@@ -74,7 +74,7 @@ model contract{
 
 
 enum contractStatus {
-  PENDING
+  REJECTED
   IN_PROGRESS
   COMPLETED
 }

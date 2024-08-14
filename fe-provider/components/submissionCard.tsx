@@ -5,10 +5,13 @@ interface SubmissionCardProps {
   JobId: number;
   title: string;
   submissonLink: string;
- 
+  onAccept: (contractId: number) => void;
+  onReject: (contractId: number) => void;
+  id: number;
+  status: "COMPLETED" | "IN_PROGRESS" | "REJECTED"; 
 }
 
-export default function SubmissionCard({ JobId, title, submissonLink}: SubmissionCardProps) {
+export default function SubmissionCard({ JobId, title, submissonLink,onAccept,onReject,id,status}: SubmissionCardProps) {
 
   function CopyToClipboard(url: string) {
     navigator.clipboard.writeText(submissonLink);
@@ -16,19 +19,29 @@ export default function SubmissionCard({ JobId, title, submissonLink}: Submissio
   }
 
   return (
-    <div className="   bg-gray-900 rounded-lg p-6 text-white  my-3 ">
+    <div className="bg-gray-900 rounded-lg p-6 text-white my-3">
       <div className="flex items-center justify-between mb-4">
         <div className="font-medium">
           <span>Job ID:</span> {JobId}
         </div>
         <div className="font-medium uppercase text-blue-500">{title}</div>
         <div className="flex items-center space-x-2">
-          <button className="px-2 py-2 rounded-md font-semibold bg-green-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
-            APPROVE
-          </button>
-          <button className="px-2 py-2 rounded-md font-semibold bg-red-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md">
-            REJECT
-          </button>
+          {status === "IN_PROGRESS" && ( 
+            <>
+              <button
+                onClick={() => onAccept(id)}
+                className="px-2 py-2 rounded-md font-semibold bg-green-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md"
+              >
+                APPROVE
+              </button>
+              <button
+                onClick={() => onReject(id)}
+                className="px-2 py-2 rounded-md font-semibold bg-red-500 text-white text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md"
+              >
+                REJECT
+              </button>
+            </>
+          )}
         </div>
       </div>
       <div className="flex items-center font-medium">
@@ -39,9 +52,7 @@ export default function SubmissionCard({ JobId, title, submissonLink}: Submissio
           className="flex-1 text-black bg-white rounded-md shadow-sm border-gray-300"
         />
         <button
-          onClick={() => {
-            CopyToClipboard(submissonLink);
-          }}
+          onClick={() => CopyToClipboard(submissonLink)}
           className="ml-2 bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6 text-white inline-block"
         >
           <span className="absolute inset-0 overflow-hidden rounded-full">

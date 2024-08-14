@@ -15,7 +15,7 @@ interface ContractProps {
   id: number;
   jobId: number;
   DeveloperId: number;
-  status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+  status: "REJECTED" | "IN_PROGRESS" | "COMPLETED";
   submissonLink: string | null; 
   Job: Job;
 }
@@ -54,7 +54,7 @@ export default function Component() {
         }
       );
       console.log(submit)
-      alert("Submission set successfully")
+      alert("Submission sent successfully")
       fetchContracts()
     } catch (error) {
       console.error("Error submitting link:", error);
@@ -69,7 +69,7 @@ export default function Component() {
         Active Contracts
       </h1>
       {activeContracts.length === 0 ? (
-        <div className="text-center text-white">
+        <div className="text-center text-lg text-white">
           No active contracts at the moment.
         </div>
       ) : (
