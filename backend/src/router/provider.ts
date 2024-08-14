@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import {
   Connection,
@@ -11,13 +12,16 @@ import {
 import { Router } from "express";
 import nacl from "tweetnacl";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET, privateKey, RPC_URL } from "../config";
+import { JWT_SECRET } from "../config";
 import { middleware_provider } from "./middleware";
 import bs58 from "bs58";
 const router = Router();
 const prisma = new PrismaClient();
 const parentWallet = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
-const connection = new Connection(RPC_URL);
+const connection = new Connection(
+  "https://solana-devnet.g.alchemy.com/v2/qlsrTkNGjnuK46GWAC2AVAaVnVZ2ylVf"
+);
+require("dotenv").config();
 
 router.post("/reject", async (req, res) => {
   const { contractId } = req.body;
@@ -32,10 +36,34 @@ router.post("/reject", async (req, res) => {
         id: contractId,
       },
       data: {
-        status : 'REJECTED'
+        status: "REJECTED",
+      },
+      include: {
+        Job: true,
       },
     });
-    res.json(updatedContract);
+
+    const updatedJob = await prisma.job.update({
+      where: {
+        id: updatedContract.jobId,
+      },
+      data: {
+        developerId: null,
+      },
+    });
+    const deletedApplications = await prisma.application.deleteMany({
+      where: {
+        JobId: updatedContract.jobId,
+        DeveloperId: updatedContract.DeveloperId,
+      },
+    });
+
+    res.json({
+      message: "Contract rejected and job reposted",
+      updatedContract,
+      updatedJob,
+      deletedApplications,
+    });
   } catch (error) {
     console.error("Error processing rejection:", error);
     res.status(500).json({ message: "Error processing rejection" });
@@ -43,29 +71,26 @@ router.post("/reject", async (req, res) => {
 });
 
 router.post("/payment", middleware_provider, async (req, res) => {
+  const PRIVATE_KEY = (process.env.PRIVATE_KEY || "").trim();
+  if (!PRIVATE_KEY) {
+    throw new Error("Private key not set in environment variables");
+  }
+
   const { contractId } = req.body;
   try {
     const payment = await prisma.$transaction(async (tx) => {
       const contract = await tx.contract.findUnique({
-        where: {
-          id: contractId,
-        },
+        where: { id: contractId },
         include: {
-          Job: {
-            select: {
-              amount: true,
-            },
-          },
-          Developer: {
-            select: {
-              address: true,
-            },
-          },
+          Job: { select: { amount: true } },
+          Developer: { select: { address: true } },
         },
       });
-      if (!contract || contract.status !== "IN_PROGRESS" ) {
+
+      if (!contract || contract.status !== "IN_PROGRESS") {
         return res.status(400).json({ message: "Invalid contract status" });
       }
+
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: new PublicKey(parentWallet),
@@ -73,26 +98,31 @@ router.post("/payment", middleware_provider, async (req, res) => {
           lamports: contract.Job.amount * LAMPORTS_PER_SOL,
         })
       );
-      const keyPair = Keypair.fromSecretKey(bs58.decode(privateKey));
-      const signature = await sendAndConfirmTransaction(
-        connection,
-        transaction,
-        [keyPair]
-      );
-      await prisma.contract.update({
-        where: {
-          id: contractId,
-        },
-        data: {
-          status: "COMPLETED",
-        },
-      });
-      console.log(contract, signature);
-      return { contract, signature };
+
+      try {
+        const keyPair = Keypair.fromSecretKey(bs58.decode(PRIVATE_KEY));
+
+        const signature = await sendAndConfirmTransaction(
+          connection,
+          transaction,
+          [keyPair]
+        );
+
+        await prisma.contract.update({
+          where: { id: contractId },
+          data: { status: "COMPLETED" },
+        });
+
+        return { contract, signature };
+      } catch (error: any) {
+        console.error("Error processing payment:", error.message);
+        throw new Error("Payment processing failed");
+      }
     });
+
     res.json(payment);
   } catch (error) {
-    console.error(error);
+    console.error("Error processing payment:", error);
     res.status(500).json({ message: "Error processing payment" });
   }
 });
@@ -113,7 +143,7 @@ router.get("/submission", middleware_provider, async (req, res) => {
       select: {
         id: true,
         submissonLink: true,
-        status : true,
+        status: true,
         Job: {
           select: {
             id: true,
@@ -231,6 +261,13 @@ router.get("/jobs", middleware_provider, async (req, res) => {
     const jobs = await prisma.job.findMany({
       where: {
         jobProviderId: jobProviderId,
+      },
+      include: {
+        Contract: {
+          select: {
+            status: true,
+          },
+        },
       },
     });
     res.status(200).json(jobs);

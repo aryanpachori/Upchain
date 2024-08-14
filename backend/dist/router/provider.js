@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
 const client_1 = require("@prisma/client");
 const web3_js_1 = require("@solana/web3.js");
 const express_1 = require("express");
@@ -23,7 +24,8 @@ const bs58_1 = __importDefault(require("bs58"));
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
 const parentWallet = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
-const connection = new web3_js_1.Connection(config_1.RPC_URL);
+const connection = new web3_js_1.Connection("https://solana-devnet.g.alchemy.com/v2/qlsrTkNGjnuK46GWAC2AVAaVnVZ2ylVf");
+require("dotenv").config();
 router.post("/reject", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { contractId } = req.body;
     if (!contractId) {
@@ -35,10 +37,32 @@ router.post("/reject", (req, res) => __awaiter(void 0, void 0, void 0, function*
                 id: contractId,
             },
             data: {
-                status: 'REJECTED'
+                status: "REJECTED",
+            },
+            include: {
+                Job: true,
             },
         });
-        res.json(updatedContract);
+        const updatedJob = yield prisma.job.update({
+            where: {
+                id: updatedContract.jobId,
+            },
+            data: {
+                developerId: null,
+            },
+        });
+        const deletedApplications = yield prisma.application.deleteMany({
+            where: {
+                JobId: updatedContract.jobId,
+                DeveloperId: updatedContract.DeveloperId,
+            },
+        });
+        res.json({
+            message: "Contract rejected and job reposted",
+            updatedContract,
+            updatedJob,
+            deletedApplications,
+        });
     }
     catch (error) {
         console.error("Error processing rejection:", error);
@@ -46,24 +70,19 @@ router.post("/reject", (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 }));
 router.post("/payment", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const PRIVATE_KEY = (process.env.PRIVATE_KEY || '').trim();
+    console.log(PRIVATE_KEY);
+    if (!PRIVATE_KEY) {
+        throw new Error("Private key not set in environment variables");
+    }
     const { contractId } = req.body;
     try {
         const payment = yield prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
             const contract = yield tx.contract.findUnique({
-                where: {
-                    id: contractId,
-                },
+                where: { id: contractId },
                 include: {
-                    Job: {
-                        select: {
-                            amount: true,
-                        },
-                    },
-                    Developer: {
-                        select: {
-                            address: true,
-                        },
-                    },
+                    Job: { select: { amount: true } },
+                    Developer: { select: { address: true } },
                 },
             });
             if (!contract || contract.status !== "IN_PROGRESS") {
@@ -74,23 +93,26 @@ router.post("/payment", middleware_1.middleware_provider, (req, res) => __awaite
                 toPubkey: new web3_js_1.PublicKey(contract.Developer.address),
                 lamports: contract.Job.amount * web3_js_1.LAMPORTS_PER_SOL,
             }));
-            const keyPair = web3_js_1.Keypair.fromSecretKey(bs58_1.default.decode(config_1.privateKey));
-            const signature = yield (0, web3_js_1.sendAndConfirmTransaction)(connection, transaction, [keyPair]);
-            yield prisma.contract.update({
-                where: {
-                    id: contractId,
-                },
-                data: {
-                    status: "COMPLETED",
-                },
-            });
-            console.log(contract, signature);
-            return { contract, signature };
+            try {
+                const keyPair = web3_js_1.Keypair.fromSecretKey(bs58_1.default.decode(PRIVATE_KEY));
+                console.log(keyPair);
+                const signature = yield (0, web3_js_1.sendAndConfirmTransaction)(connection, transaction, [keyPair]);
+                yield prisma.contract.update({
+                    where: { id: contractId },
+                    data: { status: "COMPLETED" },
+                });
+                console.log(contract, signature);
+                return { contract, signature };
+            }
+            catch (error) {
+                console.error("Error processing payment:", error.message);
+                throw new Error("Payment processing failed");
+            }
         }));
         res.json(payment);
     }
     catch (error) {
-        console.error(error);
+        console.error("Error processing payment:", error);
         res.status(500).json({ message: "Error processing payment" });
     }
 }));
@@ -222,6 +244,13 @@ router.get("/jobs", middleware_1.middleware_provider, (req, res) => __awaiter(vo
         const jobs = yield prisma.job.findMany({
             where: {
                 jobProviderId: jobProviderId,
+            },
+            include: {
+                Contract: {
+                    select: {
+                        status: true,
+                    },
+                },
             },
         });
         res.status(200).json(jobs);

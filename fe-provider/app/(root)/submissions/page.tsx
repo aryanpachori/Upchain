@@ -31,6 +31,7 @@ export default function Component() {
 
     setSubmission(response.data);
   }
+
   async function onAccept(contractId: number) {
     try {
       const response = await axios.post(
@@ -40,6 +41,7 @@ export default function Component() {
           headers: { Authorization: localStorage.getItem("token") },
         }
       );
+      alert("Amount dispenced to developer");
       fetchsubmissions();
     } catch (error) {
       console.error("Error accepting submission", error);
@@ -61,6 +63,13 @@ export default function Component() {
     }
   }
 
+  const currentSubmissions = submission.filter(
+    (sub) => sub.status === "IN_PROGRESS"
+  );
+  const pastSubmissions = submission.filter(
+    (sub) => sub.status === "COMPLETED" || sub.status === "REJECTED"
+  );
+
   return (
     <div className="bg-gray-900 min-h-screen pt-5 pb-5">
       <div className="container mx-auto my-8 px-4 sm:px-6 lg:px-8">
@@ -74,10 +83,9 @@ export default function Component() {
               <div className="font-medium text-white">Current Submissions</div>
             </div>
             <div className="px-6 py-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {submission
-                  .filter((sub) => sub.status === "IN_PROGRESS")
-                  .map((sub) => (
+              {currentSubmissions.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {currentSubmissions.map((sub) => (
                     <SubmissionCard
                       key={sub.id}
                       id={sub.id}
@@ -89,7 +97,12 @@ export default function Component() {
                       status={sub.status}
                     />
                   ))}
-              </div>
+                </div>
+              ) : (
+                <p className="text-red-500 border-0">
+                  No current submissions :D
+                </p>
+              )}
             </div>
 
             {/* Past Submissions */}
@@ -98,23 +111,18 @@ export default function Component() {
             </div>
             <div className="px-6 py-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {submission
-                  .filter(
-                    (sub) =>
-                      sub.status === "COMPLETED" || sub.status === "REJECTED"
-                  )
-                  .map((sub) => (
-                    <SubmissionCard
-                      key={sub.id}
-                      id={sub.id}
-                      JobId={sub.Job.id}
-                      title={sub.Job.title}
-                      submissonLink={sub.submissonLink}
-                      onAccept={onAccept}
-                      onReject={onReject}
-                      status={sub.status}
-                    />
-                  ))}
+                {pastSubmissions.map((sub) => (
+                  <SubmissionCard
+                    key={sub.id}
+                    id={sub.id}
+                    JobId={sub.Job.id}
+                    title={sub.Job.title}
+                    submissonLink={sub.submissonLink}
+                    onAccept={onAccept}
+                    onReject={onReject}
+                    status={sub.status}
+                  />
+                ))}
               </div>
             </div>
           </div>

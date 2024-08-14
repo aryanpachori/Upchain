@@ -8,6 +8,7 @@ interface jobsCardProps {
   requirements: string;
   amount: number;
   jobId: number;
+ 
 }
 export default function JobsCard({
   title,
@@ -15,10 +16,11 @@ export default function JobsCard({
   requirements,
   amount,
   jobId,
+
 }: jobsCardProps) {
   const router = useRouter();
 
-  
+
 
   return (
     <div className="mb-5">
@@ -26,7 +28,7 @@ export default function JobsCard({
         <div className="bg-gray-800 shadow-md rounded-lg overflow-hidden">
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-2">
-              {title}
+              {title} 
               <br />{" "}
               <span className="font-mono  text-red-400 text-base">
                 JOB ID: {jobId}
