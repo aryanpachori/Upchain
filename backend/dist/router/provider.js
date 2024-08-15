@@ -70,8 +70,7 @@ router.post("/reject", (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 }));
 router.post("/payment", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const PRIVATE_KEY = (process.env.PRIVATE_KEY || '').trim();
-    console.log(PRIVATE_KEY);
+    const PRIVATE_KEY = (process.env.PRIVATE_KEY || "").trim();
     if (!PRIVATE_KEY) {
         throw new Error("Private key not set in environment variables");
     }
@@ -95,13 +94,11 @@ router.post("/payment", middleware_1.middleware_provider, (req, res) => __awaite
             }));
             try {
                 const keyPair = web3_js_1.Keypair.fromSecretKey(bs58_1.default.decode(PRIVATE_KEY));
-                console.log(keyPair);
                 const signature = yield (0, web3_js_1.sendAndConfirmTransaction)(connection, transaction, [keyPair]);
                 yield prisma.contract.update({
                     where: { id: contractId },
                     data: { status: "COMPLETED" },
                 });
-                console.log(contract, signature);
                 return { contract, signature };
             }
             catch (error) {
