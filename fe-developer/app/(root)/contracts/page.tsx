@@ -39,13 +39,13 @@ export default function Component() {
     }
   }
 
-  async function handleSubmit(submissionLink :string, id : number ) {
+  async function handleSubmit(submissionLink: string, id: number) {
     try {
       const submit = await axios.post(
         `${BACKEND_URL}/submission`,
         {
           submissionLink,
-          contractId : id,
+          contractId: id,
         },
         {
           headers: {
@@ -53,13 +53,14 @@ export default function Component() {
           },
         }
       );
-      console.log(submit)
-      alert("Submission sent successfully")
-      fetchContracts()
+      console.log(submit);
+      alert("Submission sent successfully");
+      fetchContracts();
     } catch (error) {
       console.error("Error submitting link:", error);
     }
   }
+
   const activeContracts = contracts.filter(contract => !contract.submissonLink);
   const pastContracts = contracts.filter(contract => contract.submissonLink);
 
@@ -73,20 +74,22 @@ export default function Component() {
           No active contracts at the moment.
         </div>
       ) : (
-        activeContracts.map((contract) => (
-          <ContractCard
-            key={contract.id}
-            jobID={contract.jobId}
-            title={contract.Job.title}
-            description={contract.Job.description}
-            status={contract.status}
-            submissonLink={contract.submissonLink}
-            onSubmit={(link) => handleSubmit(link, contract.id)}
-          />
-        ))
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {activeContracts.map((contract) => (
+            <ContractCard
+              key={contract.id}
+              jobID={contract.jobId}
+              title={contract.Job.title}
+              description={contract.Job.description}
+              status={contract.status}
+              submissonLink={contract.submissonLink}
+              onSubmit={(link) => handleSubmit(link, contract.id)}
+            />
+          ))}
+        </div>
       )}
 
-      <h2  className="text-4xl font-bold font-mono text-blue-500 p-7 text-center">
+      <h2 className="text-4xl font-bold font-mono text-blue-500 p-7 text-center">
         Past Contracts
       </h2>
       {pastContracts.length === 0 ? (
@@ -94,19 +97,20 @@ export default function Component() {
           No past contracts to display.
         </div>
       ) : (
-        pastContracts.map((contract) => (
-          <ContractCard
-            key={contract.id}
-            jobID={contract.jobId}
-            title={contract.Job.title}
-            description={contract.Job.description}
-            status={contract.status}
-            submissonLink={contract.submissonLink}
-            onSubmit={(link) => handleSubmit(link, contract.id)}
-          />
-        ))
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {pastContracts.map((contract) => (
+            <ContractCard
+              key={contract.id}
+              jobID={contract.jobId}
+              title={contract.Job.title}
+              description={contract.Job.description}
+              status={contract.status}
+              submissonLink={contract.submissonLink}
+              onSubmit={(link) => handleSubmit(link, contract.id)}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
 }
-

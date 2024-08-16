@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { BackgroundGradient } from "./ui/background-gradient";
 
 interface ContractCardProps {
   jobID: number;
@@ -43,10 +44,12 @@ export default function ContractCard({
   const badgeColor = getBadgeColor(status);
   
   return (
-    <div className="w-full max-w-6xl mx-auto py-8 px-4 md:px-6 pt-2 ">
+    
+    <div className="w-full max-w-3xl mx-auto py-8 px-4 md:px-6 pt-2  ">
+      <BackgroundGradient className="rounded-[22px]">
       <div className="flex items-center justify-between "></div>
       <div className="grid gap-4">
-        <Card className="bg-gray-800 border-gray-900 ">
+        <Card className="bg-gray-800 border-gray-900 rounded-[22px]">
           <CardHeader>
             <div className="flex items-center justify-between ">
               <div className="font-medium text-white">
@@ -94,7 +97,9 @@ export default function ContractCard({
           </CardContent>
         </Card>
       </div>
+      </BackgroundGradient>
     </div>
+    
   );
 }
 

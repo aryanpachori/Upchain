@@ -27,6 +27,7 @@ export default function JobList() {
       console.error("Error fetching jobs", e);
     }
   }
+
   useEffect(() => {
     fetchJobs();
   }, []);
@@ -36,22 +37,25 @@ export default function JobList() {
       <h1 className="text-4xl font-mono font-bold mb-8 text-blue-500">
         Available Jobs
       </h1>
-      {jobs.length == 0 ? (
-        <div className=" underline text-center font-mono mt-20 h-screen max-w-full text-3xl text-red-500">
+      {jobs.length === 0 ? (
+        <div className="underline text-center font-mono mt-20 h-screen max-w-full text-3xl text-red-500">
           No jobs available right now :)
         </div>
       ) : (
-        jobs.map((job) => (
-          <JobsCard
-            key={job.id}
-            title={job.title}
-            jobId={job.id}
-            description={job.description}
-            requirements={job.requirements}
-            amount={job.amount}
-          />
-        ))
+        <div className="flex flex-col gap-10"> {/* Added gap between job cards */}
+          {jobs.map((job) => (
+            <JobsCard
+              key={job.id}
+              title={job.title}
+              jobId={job.id}
+              description={job.description}
+              requirements={job.requirements}
+              amount={job.amount}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
 }
+
