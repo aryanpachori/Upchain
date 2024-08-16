@@ -44,7 +44,7 @@ export default function JobsCard({
             </div>
             <div className="mb-4">
               <h3 className="text-lg font-bold mb-2">Salary Range:</h3>
-              <p>{amount}</p>
+              <p>  {amount} SOL</p>
             </div>
             <button
               onClick={handleApplyClick}

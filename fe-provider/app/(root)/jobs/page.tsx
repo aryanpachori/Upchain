@@ -9,7 +9,6 @@ interface Job {
   description: string;
   requirements: string;
   amount: number;
- 
 }
 export default function jobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -35,18 +34,18 @@ export default function jobs() {
       <h1 className="text-4xl font-mono font-bold mb-8 text-blue-500">
         Listed Jobs
       </h1>
-
-      {jobs.map((job) => (
-        <JobsCard
-          key={job.id}
-          title={job.title}
-          jobId={job.id}
-          description={job.description}
-          requirements={job.requirements}
-          amount={job.amount}
-          
-        />
-      ))}
+      <div className="space-y-10">
+        {jobs.map((job) => (
+          <JobsCard
+            key={job.id}
+            title={job.title}
+            jobId={job.id}
+            description={job.description}
+            requirements={job.requirements}
+            amount={job.amount}
+          />
+        ))}
+      </div>
     </div>
   );
 }

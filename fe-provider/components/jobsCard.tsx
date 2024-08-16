@@ -1,6 +1,5 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+"use client"
+import { BackgroundGradient } from "./ui/background-gradient";
 
 interface jobsCardProps {
   title: string;
@@ -8,7 +7,6 @@ interface jobsCardProps {
   requirements: string;
   amount: number;
   jobId: number;
- 
 }
 export default function JobsCard({
   title,
@@ -16,19 +14,16 @@ export default function JobsCard({
   requirements,
   amount,
   jobId,
-
 }: jobsCardProps) {
-  const router = useRouter();
-
-
+  
 
   return (
-    <div className="mb-5">
-      <div className="flex flex-col gap-8">
-        <div className="bg-gray-800 shadow-md rounded-lg overflow-hidden">
+    <BackgroundGradient className="rounded-[22px]">
+      <div className="flex flex-col gap-8 ">
+        <div className="bg-gray-800 shadow-md  overflow-hidden rounded-[22px] ">
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-2">
-              {title} 
+              {title}
               <br />{" "}
               <span className="font-mono  text-red-400 text-base">
                 JOB ID: {jobId}
@@ -48,6 +43,6 @@ export default function JobsCard({
           </div>
         </div>
       </div>
-    </div>
+    </BackgroundGradient>
   );
 }

@@ -5,10 +5,12 @@ import { cn } from "@/lib/utils";
 
 export const TextRevealCard = ({
   text,
+
   children,
   className,
 }: {
   text: string;
+
   children?: React.ReactNode;
   className?: string;
 }) => {
@@ -20,7 +22,8 @@ export const TextRevealCard = ({
 
   useEffect(() => {
     if (cardRef.current) {
-      const { left, width: localWidth } = cardRef.current.getBoundingClientRect();
+      const { left, width: localWidth } =
+        cardRef.current.getBoundingClientRect();
       setLeft(left);
       setLocalWidth(localWidth);
     }
@@ -32,14 +35,14 @@ export const TextRevealCard = ({
     <div
       ref={cardRef}
       className={cn(
-        "bg-gray-900 border border-white/[0.08] rounded-lg p-8 relative overflow-hidden", // Adjust overflow to hidden
+        "bg-gray-900 border border-white/[0.08] w-[50rem] rounded-lg p-8 relative overflow-visible", // Increase width as needed
         className
       )}
     >
       {children}
 
-      <div className="relative overflow-hidden">
-        <p className="text-base sm:text-[3rem] py-10 font-bold text-gray-300 bg-clip-text text-transparent whitespace-nowrap">
+      <div className="overflow-visible [mask-image:linear-gradient(to_bottom,transparent,white,transparent)]">
+        <p className="text-base sm:text-[3rem] py-10 font-bold bg-clip-text text-transparent bg-gray-300 whitespace-nowrap overflow-visible">
           {text}
         </p>
         <MemoizedStars />
@@ -78,6 +81,7 @@ const Stars = () => {
             borderRadius: "50%",
             zIndex: 1,
           }}
+          className="inline-block"
         ></motion.span>
       ))}
     </div>
