@@ -24,7 +24,7 @@ export default function SubmissionCard({ JobId, title, submissonLink,onAccept,on
         <div className="font-medium">
           <span>Job ID:</span> {JobId}
         </div>
-        <div className="font-medium uppercase text-blue-500">{title}</div>
+        <div className="">Name :<span className="font-medium uppercase text-blue-500"> {title}</span></div>
         <div className="flex items-center space-x-2">
           {status === "IN_PROGRESS" && ( 
             <>
