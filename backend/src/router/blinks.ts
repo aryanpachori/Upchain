@@ -20,12 +20,12 @@ const headers = createActionHeaders();
 const PAYMENT_AMOUNT_SOL = 0.1;
 const DEFAULT_SOL_ADDRESS = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
 const connection = new Connection(
-  "https://solana-devnet.g.alchemy.com/v2/qlsrTkNGjnuK46GWAC2AVAaVnVZ2ylVf"
+   "https://solana-devnet.g.alchemy.com/v2/qlsrTkNGjnuK46GWAC2AVAaVnVZ2ylVf"
 );
 
 router.use(actionCorsMiddleware({}));
 
-// Endpoint to get action data
+
 router.get("/actions/transfer-sol", async (req, res) => {
   try {
     const baseHref = new URL(
@@ -82,10 +82,11 @@ router.get("/actions/transfer-sol", async (req, res) => {
   }
 });
 
-// Endpoint to handle payment and job creation
+
 router.post("/transfer-sol", async (req, res) => {
   try {
-    const { account, title, description, requirements, amount } = req.body;
+    const { account, data } = req.body;
+    const { title, description, requirements, amount } = data;
 
     if (!account || !title || !description || !requirements || !amount) {
       throw new Error('Missing required parameters');
@@ -109,18 +110,30 @@ router.post("/transfer-sol", async (req, res) => {
       .serialize({ requireAllSignatures: false, verifySignatures: false })
       .toString("base64");
 
-    // Save job details to the database
+    
+    let provider = await prisma.provider.findUnique({
+      where: { address: account },
+    });
+
+    if (!provider) {
+      provider = await prisma.provider.create({
+        data: {
+          address: account,
+        },
+      });
+    }
+
     const newJob = await prisma.job.create({
       data: {
         title,
         description,
         requirements,
         amount: Number(amount),
-        jobProviderId: Math.random() // Assuming the account is used as the jobProviderId
+        jobProviderId: provider.id, 
       },
     });
 
-    const response: ActionPostResponse = {
+    const response = {
       transaction: serialTX,
       message: "Job posted successfully",
     };
@@ -131,5 +144,6 @@ router.post("/transfer-sol", async (req, res) => {
     res.status(500).json({ error: "An unknown error occurred" });
   }
 });
+
 
 export default router;
