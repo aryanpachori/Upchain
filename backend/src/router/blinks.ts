@@ -5,6 +5,7 @@ import {
   SystemProgram,
   Transaction,
   LAMPORTS_PER_SOL,
+  clusterApiUrl,
 } from "@solana/web3.js";
 import {
   actionCorsMiddleware,
@@ -20,9 +21,7 @@ const router = express.Router();
 const headers = createActionHeaders();
 const PAYMENT_AMOUNT_SOL = 0.1;
 const DEFAULT_SOL_ADDRESS = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
-const connection = new Connection(
-   "https://solana-devnet.g.alchemy.com/v2/qlsrTkNGjnuK46GWAC2AVAaVnVZ2ylVf"
-);
+const connection = new Connection(process.env.RPC_URL||clusterApiUrl('devnet'));
 
 
 router.use(actionCorsMiddleware({}));

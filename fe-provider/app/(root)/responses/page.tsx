@@ -69,6 +69,12 @@ export default function Component() {
   }
 
   async function onAccept(jobId: number, DeveloperId: number) {
+
+    const userConfirmed = window.confirm("Accepting the application the amount assigned for the job will be debited from your wallet and sent to the escrow");
+
+  if (!userConfirmed) {
+    return; 
+  }
     try {
       const { data } = await axios.get(`${BACKEND_URL}/job/${jobId}/amount`, {
         headers: {

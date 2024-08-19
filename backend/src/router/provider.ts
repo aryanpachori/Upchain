@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import {
+  clusterApiUrl,
   Connection,
   Keypair,
   LAMPORTS_PER_SOL,
@@ -18,9 +19,7 @@ import bs58 from "bs58";
 const router = Router();
 const prisma = new PrismaClient();
 const parentWallet = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
-const connection = new Connection(
-  "https://solana-devnet.g.alchemy.com/v2/qlsrTkNGjnuK46GWAC2AVAaVnVZ2ylVf"
-);
+const connection = new Connection(process.env.RPC_URL||clusterApiUrl('devnet'));
 require("dotenv").config();
 
 router.post("/reject", async (req, res) => {
