@@ -1,4 +1,5 @@
-"use client";
+"use client"
+import React, { Suspense } from 'react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { BACKEND_URL } from "@/utils";
@@ -6,14 +7,15 @@ import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-export default function Component() {
+function ApplicationForm() {
   const [name, setName] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [coverletter, setCoverletter] = useState("");
   const [contactInfo, setContactInfo] = useState("");
   const params = useSearchParams();
   const jobId = params.get("jobId");
- const router = useRouter()
+  const router = useRouter();
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
@@ -117,3 +119,10 @@ export default function Component() {
   );
 }
 
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ApplicationForm />
+    </Suspense>
+  );
+}
