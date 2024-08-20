@@ -51,7 +51,7 @@ export default function Landing() {
         UpChain (Seller) <br />
         <div className="sm:text-base mt-2 pb-5">
           If you're a developer looking for gigs click{" "}
-          <a className="text-slate-300 underline" href="https://chatgpt.com/">
+          <a className="text-slate-300 underline" href="https://upchain-fs5c.vercel.app/">
             here!
           </a>
         </div>
