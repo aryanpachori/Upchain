@@ -71,25 +71,22 @@ router.post("/reject", async (req, res) => {
 
 router.post("/payment", middleware_provider, async (req, res) => {
   const PRIVATE_KEY = (process.env.PRIVATE_KEY || "").trim();
-  if (!PRIVATE_KEY) {
-    throw new Error("Private key not set in environment variables");
-  }
-
+ 
   const { contractId } = req.body;
   try {
+    const contract = await prisma.contract.findUnique({
+      where: { id: contractId },
+      include: {
+        Job: { select: { amount: true } },
+        Developer: { select: { address: true } },
+      },
+    });
+
+    if (!contract || contract.status !== "IN_PROGRESS") {
+      return res.status(400).json({ message: "Invalid contract status" });
+    }
+
     const payment = await prisma.$transaction(async (tx) => {
-      const contract = await tx.contract.findUnique({
-        where: { id: contractId },
-        include: {
-          Job: { select: { amount: true } },
-          Developer: { select: { address: true } },
-        },
-      });
-
-      if (!contract || contract.status !== "IN_PROGRESS") {
-        return res.status(400).json({ message: "Invalid contract status" });
-      }
-
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: new PublicKey(parentWallet),
@@ -107,7 +104,7 @@ router.post("/payment", middleware_provider, async (req, res) => {
           [keyPair]
         );
 
-        await prisma.contract.update({
+        await tx.contract.update({
           where: { id: contractId },
           data: { status: "COMPLETED" },
         });
@@ -119,12 +116,13 @@ router.post("/payment", middleware_provider, async (req, res) => {
       }
     });
 
-    res.json(payment);
-  } catch (error) {
-    console.error("Error processing payment:", error);
-    res.status(500).json({ message: "Error processing payment" });
+    return res.status(200).json(payment);
+  } catch (error: any) {
+    console.error("Error:", error.message);
+    return res.status(500).json({ message: error.message });
   }
 });
+
 
 router.get("/submission", middleware_provider, async (req, res) => {
   //@ts-ignore

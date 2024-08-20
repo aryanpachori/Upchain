@@ -1,2 +1,2 @@
 
-export const BACKEND_URL =  "http://localhost:3002/v1/developer"
+export const BACKEND_URL =  "https://upchain.onrender.com/v1/developer"

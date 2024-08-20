@@ -139,7 +139,8 @@ export default function Component() {
   return (
     <div className="bg-gray-900 pb-5 min-h-screen">
       <h1 className="text-3xl font-bold text-center pt-10 font-mono text-green-500">
-        JOB RESPONSES
+        JOB RESPONSES<br/>
+        <span className="text-red-500 text-sm">(In case of an error while creating the contract, please re-login. The issue might be due to a transaction timeout.)</span>
       </h1>
       {responses.length === 0 ? (
         <div className=" underline text-center font-mono mt-20 h-screen max-w-full text-3xl text-red-500">No responses at this time:)</div>

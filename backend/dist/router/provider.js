@@ -71,22 +71,19 @@ router.post("/reject", (req, res) => __awaiter(void 0, void 0, void 0, function*
 }));
 router.post("/payment", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const PRIVATE_KEY = (process.env.PRIVATE_KEY || "").trim();
-    if (!PRIVATE_KEY) {
-        throw new Error("Private key not set in environment variables");
-    }
     const { contractId } = req.body;
     try {
+        const contract = yield prisma.contract.findUnique({
+            where: { id: contractId },
+            include: {
+                Job: { select: { amount: true } },
+                Developer: { select: { address: true } },
+            },
+        });
+        if (!contract || contract.status !== "IN_PROGRESS") {
+            return res.status(400).json({ message: "Invalid contract status" });
+        }
         const payment = yield prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
-            const contract = yield tx.contract.findUnique({
-                where: { id: contractId },
-                include: {
-                    Job: { select: { amount: true } },
-                    Developer: { select: { address: true } },
-                },
-            });
-            if (!contract || contract.status !== "IN_PROGRESS") {
-                return res.status(400).json({ message: "Invalid contract status" });
-            }
             const transaction = new web3_js_1.Transaction().add(web3_js_1.SystemProgram.transfer({
                 fromPubkey: new web3_js_1.PublicKey(parentWallet),
                 toPubkey: new web3_js_1.PublicKey(contract.Developer.address),
@@ -95,7 +92,7 @@ router.post("/payment", middleware_1.middleware_provider, (req, res) => __awaite
             try {
                 const keyPair = web3_js_1.Keypair.fromSecretKey(bs58_1.default.decode(PRIVATE_KEY));
                 const signature = yield (0, web3_js_1.sendAndConfirmTransaction)(connection, transaction, [keyPair]);
-                yield prisma.contract.update({
+                yield tx.contract.update({
                     where: { id: contractId },
                     data: { status: "COMPLETED" },
                 });
@@ -106,11 +103,11 @@ router.post("/payment", middleware_1.middleware_provider, (req, res) => __awaite
                 throw new Error("Payment processing failed");
             }
         }));
-        res.json(payment);
+        return res.status(200).json(payment);
     }
     catch (error) {
-        console.error("Error processing payment:", error);
-        res.status(500).json({ message: "Error processing payment" });
+        console.error("Error:", error.message);
+        return res.status(500).json({ message: error.message });
     }
 }));
 router.get("/submission", middleware_1.middleware_provider, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
