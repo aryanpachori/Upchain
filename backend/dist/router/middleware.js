@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.middleware_dev = exports.middleware_provider = void 0;
+exports.middleware_provider = middleware_provider;
+exports.middleware_dev = middleware_dev;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
 function middleware_provider(req, res, next) {
@@ -29,7 +30,6 @@ function middleware_provider(req, res, next) {
         });
     }
 }
-exports.middleware_provider = middleware_provider;
 function middleware_dev(req, res, next) {
     var _a;
     const authHeader = (_a = req.headers["authorization"]) !== null && _a !== void 0 ? _a : "";
@@ -48,4 +48,3 @@ function middleware_dev(req, res, next) {
         });
     }
 }
-exports.middleware_dev = middleware_dev;
