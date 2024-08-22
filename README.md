@@ -7,7 +7,7 @@ Upchain is a decentralized job portal designed to connect developers with job op
 - **Decentralized Job Posting:** Post job opportunities directly without intermediaries.
   - [Link](https://dial.to/developer?url=https%3A%2F%2Fupchain.onrender.com%2Fv1%2Fblinks%2Factions%2Ftransfer-sol&cluster=devnet)
 
-![Blinks Screenshot](https://github.com/user-attachments/assets/d800016b-1635-49cd-996c-50f5f8ca3e35)
+![Blinks Screenshot](https://github.com/user-attachments/assets/96c98ba6-6820-4156-90d3-a0c1b137b3e9)
 
 ## Features
 
