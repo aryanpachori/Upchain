@@ -15,27 +15,26 @@ import {
 import { PrismaClient } from "@prisma/client";
 import { BASE64_IMG } from "../config";
 
-
 const prisma = new PrismaClient();
 const router = express.Router();
 const headers = createActionHeaders();
 const PAYMENT_AMOUNT_SOL = 1;
 const DEFAULT_SOL_ADDRESS = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
-const connection = new Connection(process.env.RPC_URL||clusterApiUrl('devnet'));
-
+const connection = new Connection(
+  process.env.RPC_URL || clusterApiUrl("devnet")
+);
 
 router.use(actionCorsMiddleware({}));
-
 
 router.get("/actions/transfer-sol", async (req, res) => {
   try {
     const baseHref = new URL(
-      `/v1/blinks/transfer-sol`,
+      `/v1/blinks/actions/transfer-sol`,
       req.protocol + "://" + req.get("host")
     ).toString();
 
     const payload = {
-      title: "UPCHAIN",
+      title: "JOBLINK",
       icon: `data:image/png;base64,${BASE64_IMG}`,
       description: "Pay 0.1 SOL to post a job on Upchain",
       label: "Pay and Post Job",
@@ -83,14 +82,13 @@ router.get("/actions/transfer-sol", async (req, res) => {
   }
 });
 
-
-router.post("/transfer-sol", async (req, res) => {
+router.post("/actions/transfer-sol", async (req, res) => {
   try {
     const { account, data } = req.body;
     const { title, description, requirements, amount } = data;
 
     if (!account || !title || !description || !requirements || !amount) {
-      throw new Error('Missing required parameters');
+      throw new Error("Missing required parameters");
     }
 
     const user = new PublicKey(account);
@@ -111,7 +109,6 @@ router.post("/transfer-sol", async (req, res) => {
       .serialize({ requireAllSignatures: false, verifySignatures: false })
       .toString("base64");
 
-    
     let provider = await prisma.provider.findUnique({
       where: { address: account },
     });
@@ -130,21 +127,24 @@ router.post("/transfer-sol", async (req, res) => {
         description,
         requirements,
         amount: Number(amount),
-        jobProviderId: provider.id, 
+        jobProviderId: provider.id,
       },
     });
 
-    const response = {
+    const response =  {
       transaction: serialTX,
-      message: "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
+      message:
+        "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
     };
 
+    
     res.json(response);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "An unknown error occurred" });
   }
-});
 
+  
+});
 
 export default router;

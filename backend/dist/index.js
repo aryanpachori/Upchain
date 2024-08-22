@@ -11,9 +11,14 @@ const blinks_1 = __importDefault(require("./router/blinks"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-app.use('/v1/provider', provider_1.default);
-app.use('/v1/developer', developer_1.default);
-app.use('/v1/blinks', blinks_1.default);
+app.use("/v1/provider", provider_1.default);
+app.use("/v1/developer", developer_1.default);
+app.use("/v1/blinks", blinks_1.default);
+app.get("/actions.json", (req, res) => {
+    res.json({
+        message: "This is your actions.json response",
+    });
+});
 app.listen(3002, () => {
-    console.log('Server is running on port 3002');
+    console.log("Server is running on port 3002");
 });

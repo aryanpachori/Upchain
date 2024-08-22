@@ -22,13 +22,13 @@ const router = express_1.default.Router();
 const headers = (0, actions_1.createActionHeaders)();
 const PAYMENT_AMOUNT_SOL = 1;
 const DEFAULT_SOL_ADDRESS = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
-const connection = new web3_js_1.Connection(process.env.RPC_URL || (0, web3_js_1.clusterApiUrl)('devnet'));
+const connection = new web3_js_1.Connection(process.env.RPC_URL || (0, web3_js_1.clusterApiUrl)("devnet"));
 router.use((0, actions_1.actionCorsMiddleware)({}));
 router.get("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const baseHref = new URL(`/v1/blinks/transfer-sol`, req.protocol + "://" + req.get("host")).toString();
+        const baseHref = new URL(`/v1/blinks/actions/transfer-sol`, req.protocol + "://" + req.get("host")).toString();
         const payload = {
-            title: "UPCHAIN",
+            title: "JOBLINK",
             icon: `data:image/png;base64,${config_1.BASE64_IMG}`,
             description: "Pay 0.1 SOL to post a job on Upchain",
             label: "Pay and Post Job",
@@ -75,12 +75,12 @@ router.get("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, void
         res.status(500).json({ error: "An unknown error occurred" });
     }
 }));
-router.post("/transfer-sol", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { account, data } = req.body;
         const { title, description, requirements, amount } = data;
         if (!account || !title || !description || !requirements || !amount) {
-            throw new Error('Missing required parameters');
+            throw new Error("Missing required parameters");
         }
         const user = new web3_js_1.PublicKey(account);
         const ix = web3_js_1.SystemProgram.transfer({
