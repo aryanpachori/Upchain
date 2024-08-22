@@ -124,5 +124,9 @@ router.post("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, voi
         console.error(err);
         res.status(500).json({ error: "An unknown error occurred" });
     }
+    router.options("/actions/transfer-sol", (req, res) => {
+        res.set(headers);
+        res.sendStatus(204);
+    });
 }));
 exports.default = router;

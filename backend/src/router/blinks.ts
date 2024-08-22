@@ -131,20 +131,21 @@ router.post("/actions/transfer-sol", async (req, res) => {
       },
     });
 
-    const response =  {
+    const response = {
       transaction: serialTX,
       message:
         "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
     };
 
-    
     res.json(response);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "An unknown error occurred" });
   }
-
-  
+  router.options("/actions/transfer-sol", (req, res) => {
+    res.set(headers);
+    res.sendStatus(204);
+  });
 });
 
 export default router;
