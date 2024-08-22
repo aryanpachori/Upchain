@@ -41,12 +41,8 @@ router.get("/actions/transfer-sol", async (req, res) => {
       links: {
         actions: [
           {
-            label: "PAY 0.1 SOL",
-            href: `${baseHref}?amount=${PAYMENT_AMOUNT_SOL}&to=${DEFAULT_SOL_ADDRESS}`,
-          },
-          {
             label: "Create Job",
-            href: `${baseHref}`,
+            href: `${baseHref}?amount=${PAYMENT_AMOUNT_SOL}&to=${DEFAULT_SOL_ADDRESS}`,
             parameters: [
               {
                 name: "title",
