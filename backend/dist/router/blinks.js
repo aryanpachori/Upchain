@@ -20,7 +20,7 @@ const config_1 = require("../config");
 const prisma = new client_1.PrismaClient();
 const router = express_1.default.Router();
 const headers = (0, actions_1.createActionHeaders)();
-const PAYMENT_AMOUNT_SOL = 0.1;
+const PAYMENT_AMOUNT_SOL = 1;
 const DEFAULT_SOL_ADDRESS = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
 const connection = new web3_js_1.Connection(process.env.RPC_URL || (0, web3_js_1.clusterApiUrl)('devnet'));
 router.use((0, actions_1.actionCorsMiddleware)({}));
@@ -116,7 +116,7 @@ router.post("/transfer-sol", (req, res) => __awaiter(void 0, void 0, void 0, fun
         });
         const response = {
             transaction: serialTX,
-            message: "Job posted successfully",
+            message: "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
         };
         res.json(response);
     }
