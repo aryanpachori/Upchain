@@ -23,7 +23,6 @@ const headers = (0, actions_1.createActionHeaders)();
 const PAYMENT_AMOUNT_SOL = 1;
 const DEFAULT_SOL_ADDRESS = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
 const connection = new web3_js_1.Connection(process.env.RPC_URL || (0, web3_js_1.clusterApiUrl)("devnet"));
-router.use((0, actions_1.actionCorsMiddleware)({}));
 router.get("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const baseHref = new URL(`/v1/blinks/actions/transfer-sol`, req.protocol + "://" + req.get("host")).toString();
@@ -88,8 +87,11 @@ router.post("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, voi
         tx.add(ix);
         tx.feePayer = user;
         tx.recentBlockhash = (yield connection.getLatestBlockhash({ commitment: "finalized" })).blockhash;
-        const serialTX = tx
-            .serialize({ requireAllSignatures: false, verifySignatures: false })
+        const serializedTransaction = tx
+            .serialize({
+            requireAllSignatures: false,
+            verifySignatures: false,
+        })
             .toString("base64");
         let provider = yield prisma.provider.findUnique({
             where: { address: account },
@@ -110,19 +112,21 @@ router.post("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, voi
                 jobProviderId: provider.id,
             },
         });
-        const response = {
-            transaction: serialTX,
-            message: "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
-        };
-        res.json(response);
+        const payload = yield (0, actions_1.createPostResponse)({
+            fields: {
+                transaction: tx,
+                message: "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
+            },
+        });
+        res.json(payload);
     }
     catch (err) {
         console.error(err);
         res.status(500).json({ error: "An unknown error occurred" });
     }
-    router.options("/actions/transfer-sol", (req, res) => {
-        res.set(headers);
-        res.sendStatus(204);
-    });
 }));
+router.options("/actions/transfer-sol", (req, res) => {
+    res.set(headers);
+    res.sendStatus(204);
+});
 exports.default = router;

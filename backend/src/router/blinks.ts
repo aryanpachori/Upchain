@@ -7,11 +7,7 @@ import {
   LAMPORTS_PER_SOL,
   clusterApiUrl,
 } from "@solana/web3.js";
-import {
-  actionCorsMiddleware,
-  createActionHeaders,
-  ActionPostResponse,
-} from "@solana/actions";
+import { createActionHeaders, createPostResponse } from "@solana/actions";
 import { PrismaClient } from "@prisma/client";
 import { BASE64_IMG } from "../config";
 
@@ -23,8 +19,6 @@ const DEFAULT_SOL_ADDRESS = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
 const connection = new Connection(
   process.env.RPC_URL || clusterApiUrl("devnet")
 );
-
-router.use(actionCorsMiddleware({}));
 
 router.get("/actions/transfer-sol", async (req, res) => {
   try {
@@ -101,8 +95,11 @@ router.post("/actions/transfer-sol", async (req, res) => {
     tx.recentBlockhash = (
       await connection.getLatestBlockhash({ commitment: "finalized" })
     ).blockhash;
-    const serialTX = tx
-      .serialize({ requireAllSignatures: false, verifySignatures: false })
+    const serializedTransaction = tx
+      .serialize({
+        requireAllSignatures: false,
+        verifySignatures: false,
+      })
       .toString("base64");
 
     let provider = await prisma.provider.findUnique({
@@ -127,21 +124,23 @@ router.post("/actions/transfer-sol", async (req, res) => {
       },
     });
 
-    const response = {
-      transaction: serialTX,
-      message:
-        "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
-    };
+    const payload = await createPostResponse({
+      fields: {
+        transaction: tx,
+        message:
+          "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
+      },
+    });
 
-    res.json(response);
+    res.json(payload);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "An unknown error occurred" });
   }
-  router.options("/actions/transfer-sol", (req, res) => {
-    res.set(headers);
-    res.sendStatus(204);
-  });
+});
+router.options("/actions/transfer-sol", (req, res) => {
+  res.set(headers);
+  res.sendStatus(204);
 });
 
 export default router;
