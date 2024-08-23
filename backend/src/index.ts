@@ -14,10 +14,17 @@ app.use("/v1/provider", providerRouter);
 app.use("/v1/developer", developerRouter);
 app.use("/v1/blinks", blinksRouter);
 app.get("/actions.json", (req, res) => {
+  const payload = {
+    rules: [
+      // Route for exact matches under /actions
+      { pathPattern: "/actions/transfer-sol", apiPath: "/v1/blinks/actions/transfer-sol" },
+      
+      // Wildcard route for any other actions under /actions
+      { pathPattern: "/actions/**", apiPath: "/v1/blinks/actions/**" }
+    ],
+  };
   res.set(headers);
-  res.json({
-    message: "This is your actions.json response",
-  });
+  res.json(payload);
 });
 app.listen(3002, () => {
   console.log("Server is running on port 3002");

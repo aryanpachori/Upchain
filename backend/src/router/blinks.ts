@@ -132,6 +132,7 @@ router.post("/actions/transfer-sol", async (req, res) => {
       },
     });
 
+    res.set(headers);
     res.json(payload);
   } catch (err) {
     console.error(err);
@@ -139,7 +140,11 @@ router.post("/actions/transfer-sol", async (req, res) => {
   }
 });
 router.options("/actions/transfer-sol", (req, res) => {
-  res.set(headers);
+  res.set({
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, Content-Encoding, Accept-Encoding",
+  });
   res.sendStatus(204);
 });
 

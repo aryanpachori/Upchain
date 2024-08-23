@@ -118,6 +118,7 @@ router.post("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, voi
                 message: "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
             },
         });
+        res.set(headers);
         res.json(payload);
     }
     catch (err) {
@@ -126,7 +127,11 @@ router.post("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, voi
     }
 }));
 router.options("/actions/transfer-sol", (req, res) => {
-    res.set(headers);
+    res.set({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, Content-Encoding, Accept-Encoding",
+    });
     res.sendStatus(204);
 });
 exports.default = router;
