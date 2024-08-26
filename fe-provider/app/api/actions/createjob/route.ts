@@ -83,10 +83,30 @@ export const OPTIONS = GET;
 export const POST = async (req: Request) => {
   try {
     const requestUrl = new URL(req.url);
-    const body : ActionPostRequest = await req.json();
+    const body: ActionPostRequest = await req.json();
     const { toPubkey } = validatedQueryParams(requestUrl);
-    
+    const data = body.data as {
+      title?: string;
+      description?: string;
+      requirements?: string;
+      amount?: string;
+    };
+    if (
+      !data.title ||
+      !data.description ||
+      !data.requirements ||
+      !data.amount
+    ) {
+      return new Response(
+        "Missing required fields: title, description, requirements, or amount",
+        {
+          status: 400,
+          headers: ACTIONS_CORS_HEADERS,
+        }
+      );
+    }
 
+    const { title, description, requirements, amount } = data;
     let account: PublicKey;
     try {
       account = new PublicKey(body.account);
@@ -123,14 +143,14 @@ export const POST = async (req: Request) => {
       },
     });
 
-    /*const createJob = await axios.post(`${BACKEND_URL}/blink`, {
+    const createJob = await axios.post(`${BACKEND_URL}/blink`, {
       title,
       description,
       requirements,
       amount: Number(amount),
       account,
     });
-*/
+
     return new NextResponse(JSON.stringify(payload), {
       headers: ACTIONS_CORS_HEADERS,
     });
