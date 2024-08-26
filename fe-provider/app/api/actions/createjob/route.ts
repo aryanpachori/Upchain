@@ -107,7 +107,7 @@ export const POST = async (req: Request) => {
     }
 
     const { title, description, requirements, amount } = data;
-    
+
     let account: PublicKey;
     try {
       account = new PublicKey(body.account);
@@ -154,14 +154,14 @@ export const POST = async (req: Request) => {
         description,
         requirements,
         amount: Number(amount),
-        account: account.toBase58(),
+        account,
       }),
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-      
+
     return new NextResponse(JSON.stringify(payload), {
       headers: ACTIONS_CORS_HEADERS,
     });
