@@ -330,6 +330,36 @@ router.post("/postjob", middleware_provider, async (req, res) => {
   }
 });
 
+router.post("/blink", async (req, res) => {
+  const { title, description, requirements, amount ,account } = req.body;
+
+  if (!title || !description || !requirements || !amount || !account) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  let provider = await prisma.provider.findUnique({
+    where: { address: account },
+  });
+
+  if (!provider) {
+    provider = await prisma.provider.create({
+      data: {
+        address: account,
+      },
+    });
+  }
+
+  const newJob = await prisma.job.create({
+    data: {
+      title,
+      description,
+      requirements,
+      amount: Number(amount),
+      jobProviderId: provider.id,
+    },
+  });
+  res.json(newJob)
+});
+
 router.post("/signin", async (req, res) => {
   const { publicKey, signature } = req.body;
   const message = new TextEncoder().encode("Signing in to upchain(seller)");

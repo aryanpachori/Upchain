@@ -23,6 +23,7 @@ const headers = (0, actions_1.createActionHeaders)();
 const PAYMENT_AMOUNT_SOL = 1;
 const DEFAULT_SOL_ADDRESS = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
 const connection = new web3_js_1.Connection(process.env.RPC_URL || (0, web3_js_1.clusterApiUrl)("devnet"));
+router.use((0, actions_1.actionCorsMiddleware)({}));
 router.get("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const baseHref = new URL(`/v1/blinks/actions/transfer-sol`, req.protocol + "://" + req.get("host")).toString();
@@ -127,11 +128,7 @@ router.post("/actions/transfer-sol", (req, res) => __awaiter(void 0, void 0, voi
     }
 }));
 router.options("/actions/transfer-sol", (req, res) => {
-    res.set({
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, Content-Encoding, Accept-Encoding",
-    });
+    res.set(headers);
     res.sendStatus(204);
 });
 exports.default = router;

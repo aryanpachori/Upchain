@@ -308,6 +308,32 @@ router.post("/postjob", middleware_1.middleware_provider, (req, res) => __awaite
         res.status(500).json({ message: "Failed to create job" });
     }
 }));
+router.post("/blink", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { title, description, requirements, amount, account } = req.body;
+    if (!title || !description || !requirements || !amount || !account) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+    let provider = yield prisma.provider.findUnique({
+        where: { address: account },
+    });
+    if (!provider) {
+        provider = yield prisma.provider.create({
+            data: {
+                address: account,
+            },
+        });
+    }
+    const newJob = yield prisma.job.create({
+        data: {
+            title,
+            description,
+            requirements,
+            amount: Number(amount),
+            jobProviderId: provider.id,
+        },
+    });
+    res.json(newJob);
+}));
 router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { publicKey, signature } = req.body;
     const message = new TextEncoder().encode("Signing in to upchain(seller)");
