@@ -1,6 +1,5 @@
 import {
   ActionGetResponse,
-  ActionPostRequest,
   ActionPostResponse,
   ACTIONS_CORS_HEADERS,
   createPostResponse,
@@ -30,7 +29,7 @@ export const GET = async (req: Request) => {
     const payload: ActionGetResponse = {
       type: "action",
       title: "JOBLINK",
-      icon: `data:image/png;base64,${BASE64_IMG}`,
+      icon: new URL("/logo.png", requestUrl.origin).toString(),
       description: "Pay 0.1 SOL to post a job on Upchain",
       label: "Pay and Post Job",
       links: {
