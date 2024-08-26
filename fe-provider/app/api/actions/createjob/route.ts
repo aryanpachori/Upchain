@@ -85,7 +85,7 @@ export const POST = async (req: Request) => {
     const requestUrl = new URL(req.url);
     const body: ActionPostRequest = await req.json();
     const { toPubkey } = validatedQueryParams(requestUrl);
-    const data = body.data as {
+  /*  const data = body.data as {
       title?: string;
       description?: string;
       requirements?: string;
@@ -107,7 +107,7 @@ export const POST = async (req: Request) => {
     }
 
     const { title, description, requirements, amount } = data;
-
+*/
     let account: PublicKey;
     try {
       account = new PublicKey(body.account);
@@ -144,23 +144,16 @@ export const POST = async (req: Request) => {
       },
     });
 
-    const response = await fetch(`${BACKEND_URL}/blink`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title,
-        description,
-        requirements,
-        amount: Number(amount),
-        account,
-      }),
+ /* const createJob = await axios.post(${BACKEND_URL}/blink, {
+      title,
+      description,
+      requirements,
+      amount: Number(amount),
+      account,
     });
+*/
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+ 
 
     return new NextResponse(JSON.stringify(payload), {
       headers: ACTIONS_CORS_HEADERS,
