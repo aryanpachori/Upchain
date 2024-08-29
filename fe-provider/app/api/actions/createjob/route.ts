@@ -6,7 +6,7 @@ import {
   createPostResponse,
 } from "@solana/actions";
 
-import { BASE64_IMG, DEFAULT_SOL_ADDRESS, DEFAULT_SOL_AMOUNT } from "./config";
+import { DEFAULT_SOL_ADDRESS, DEFAULT_SOL_AMOUNT } from "./config";
 import {
   Connection,
   LAMPORTS_PER_SOL,
