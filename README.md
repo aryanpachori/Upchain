@@ -2,7 +2,7 @@
 
 Upchain is a decentralized job portal designed to connect developers with job opportunities in a transparent and secure manner. Leveraging blockchain technology, Upchain facilitates contract work and payments using Solana, offering a decentralized alternative to traditional job platforms like Fiverr and Upwork.
 
-## Blinks
+## JOBlink
 
 - **Decentralized Job Posting:** Post job opportunities directly without intermediaries.
   - [Link](https://x.com/aryan42116/status/1828122681998483802)
