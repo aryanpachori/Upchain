@@ -118,7 +118,7 @@ export const POST = async (req: Request) => {
       });
     }
     const connection = new Connection(
-      "https://solana-devnet.g.alchemy.com/v2/qlsrTkNGjnuK46GWAC2AVAaVnVZ2ylVf"
+      "https://solana-mainnet.g.alchemy.com/v2/qlsrTkNGjnuK46GWAC2AVAaVnVZ2ylVf"
     );
 
     const transferSolInstruction = SystemProgram.transfer({
