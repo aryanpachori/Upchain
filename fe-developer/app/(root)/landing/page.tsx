@@ -15,23 +15,22 @@ export default function Landing() {
   const { publicKey, signMessage } = useWallet();
   const router = useRouter();
   async function signNsend() {
-    if (!publicKey) {
-      return;
-    }
+    if (publicKey && signMessage) {
+      
+    
     const message = new TextEncoder().encode("Signing in to upchain(devs)");
     const signature = await signMessage?.(message);
-    const signatureArray = signature ? Array.from(signature) : []; 
-
+    const signatureBase64 = Buffer.from(signature).toString("base64");
     const response = await axios.post(`${BACKEND_URL}/signin`, {
-      publicKey: publicKey?.toString(),
-      signature : signatureArray,
+      signature: signatureBase64,
+      publicKey: publicKey.toString(),
     });
     if (response.status === 200) {
       localStorage.setItem("token", response.data.token);
       router.push("/jobs");
     }
   }
-
+  }
   useEffect(() => {
     signNsend();
   }, [publicKey]);

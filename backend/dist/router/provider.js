@@ -337,7 +337,9 @@ router.post("/blink", (req, res) => __awaiter(void 0, void 0, void 0, function* 
 router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { publicKey, signature } = req.body;
     const message = new TextEncoder().encode("Signing in to upchain(seller)");
-    const result = tweetnacl_1.default.sign.detached.verify(message, new Uint8Array(signature.data), new web3_js_1.PublicKey(publicKey).toBytes());
+    const signatureUint8Array = Uint8Array.from(Buffer.from(signature, "base64"));
+    const publicKeyUint8Array = new web3_js_1.PublicKey(publicKey).toBytes();
+    const result = tweetnacl_1.default.sign.detached.verify(message, signatureUint8Array, publicKeyUint8Array);
     if (!result) {
         return res.status(401).json({ message: "Invalid signature" });
     }

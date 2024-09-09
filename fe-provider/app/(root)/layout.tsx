@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useMemo } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 import {
   ConnectionProvider,
   WalletProvider,
@@ -9,7 +9,7 @@ import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 
 import Appbar from "@/components/Appbar";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 // Default styles that can be overridden by your app
 require("@solana/wallet-adapter-react-ui/styles.css");
@@ -19,6 +19,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token && window.location.pathname !== "/landing") {
+      router.push("/");
+    }
+  }, [router]);
   const network = WalletAdapterNetwork.Devnet;
 
   // You can also provide a custom RPC endpoint.

@@ -363,11 +363,12 @@ router.post("/blink", async (req, res) => {
 router.post("/signin", async (req, res) => {
   const { publicKey, signature } = req.body;
   const message = new TextEncoder().encode("Signing in to upchain(seller)");
-
+  const signatureUint8Array = Uint8Array.from(Buffer.from(signature, "base64"));
+  const publicKeyUint8Array = new PublicKey(publicKey).toBytes();
   const result = nacl.sign.detached.verify(
     message,
-    new Uint8Array(signature.data),
-    new PublicKey(publicKey).toBytes()
+    signatureUint8Array,
+    publicKeyUint8Array
   );
 
   if (!result) {
