@@ -1,4 +1,4 @@
- 
+ // @ts-nocheck
 import {
   ActionGetResponse,
   ActionPostRequest,
@@ -27,7 +27,7 @@ export const GET = async (req: Request) => {
       `/api/actions/createjob?to=${toPubkey.toBase58()}`,
       requestUrl.origin
     ).toString();
-// @ts-ignore
+
     const payload: ActionGetResponse = {
       type: "action",
       title: "JOBLINK",
@@ -35,11 +35,10 @@ export const GET = async (req: Request) => {
       description: "Pay 0.1 SOL to post a job on Upchain",
       label: "Pay and Post Job",
       links: {
-        // @ts-ignore
+        
         actions: [
           {
-            // @ts-ignore
-            type : POST,
+            
             label: "Create Job",
             href: `${baseHref}`,
             parameters: [
@@ -146,10 +145,12 @@ export const POST = async (req: Request) => {
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
+        
         transaction,
         message:
           "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
       },
+      
     });
 
     await axios.post(`${requestUrl.origin}/api/job/submit`, {
