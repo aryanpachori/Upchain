@@ -39,6 +39,7 @@ export const GET = async (req: Request) => {
         actions: [
           {
             // @ts-ignore
+            type : POST,
             label: "Create Job",
             href: `${baseHref}`,
             parameters: [
