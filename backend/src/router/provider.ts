@@ -19,7 +19,7 @@ import bs58 from "bs58";
 const router = Router();
 const prisma = new PrismaClient();
 const parentWallet = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
-const connection = new Connection(process.env.RPC_URL||clusterApiUrl('devnet'));
+const connection = new Connection(process.env.RPC_URL||clusterApiUrl('mainnet-beta'));
 require("dotenv").config();
 
 router.post("/reject", async (req, res) => {

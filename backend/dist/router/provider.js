@@ -24,7 +24,7 @@ const bs58_1 = __importDefault(require("bs58"));
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
 const parentWallet = "94A7ExXa9AkdiAnPiCYwJ8SbMuZdAoXnAhGiJqygmFfL";
-const connection = new web3_js_1.Connection(process.env.RPC_URL || (0, web3_js_1.clusterApiUrl)('devnet'));
+const connection = new web3_js_1.Connection(process.env.RPC_URL || (0, web3_js_1.clusterApiUrl)('mainnet-beta'));
 require("dotenv").config();
 router.post("/reject", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { contractId } = req.body;

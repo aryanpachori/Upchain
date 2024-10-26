@@ -61,7 +61,7 @@ export default function Landing() {
       <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4">
         {publicKey ? <WalletDisconnectButton /> : <WalletMultiButton />}
       </div>
-      <div className="text-red-500 font-mono text-center mt-5">(This application is currently running on Solana Devnet.<br/> All tokens and transactions are for testing purposes only)</div>
+      
     </div>
   );
 }
