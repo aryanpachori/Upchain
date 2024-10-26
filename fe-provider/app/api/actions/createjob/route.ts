@@ -1,4 +1,4 @@
- // @ts-ignore
+ 
 import {
   ActionGetResponse,
   ActionPostRequest,
@@ -27,7 +27,7 @@ export const GET = async (req: Request) => {
       `/api/actions/createjob?to=${toPubkey.toBase58()}`,
       requestUrl.origin
     ).toString();
-
+// @ts-ignore
     const payload: ActionGetResponse = {
       type: "action",
       title: "JOBLINK",
@@ -35,8 +35,10 @@ export const GET = async (req: Request) => {
       description: "Pay 0.1 SOL to post a job on Upchain",
       label: "Pay and Post Job",
       links: {
+        // @ts-ignore
         actions: [
           {
+            // @ts-ignore
             label: "Create Job",
             href: `${baseHref}`,
             parameters: [
@@ -44,21 +46,25 @@ export const GET = async (req: Request) => {
                 name: "title",
                 label: "Enter the title for the Job",
                 required: true,
+                type : 'text'
               },
               {
                 name: "description",
                 label: "Enter the job description",
                 required: true,
+                type : 'textarea'
               },
               {
                 name: "requirements",
                 label: "Enter job requirements",
                 required: true,
+                type :'textarea'
               },
               {
                 name: "amount",
                 label: "Enter the payment amount (in SOL)",
                 required: true,
+                type :'number'
               },
             ],
           },
