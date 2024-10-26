@@ -1,4 +1,4 @@
- // @ts-nocheck
+// @ts-nocheck
 import {
   ActionGetResponse,
   ActionPostRequest,
@@ -35,10 +35,8 @@ export const GET = async (req: Request) => {
       description: "Pay 0.1 SOL to post a job on Upchain",
       label: "Pay and Post Job",
       links: {
-        
         actions: [
           {
-            
             label: "Create Job",
             href: `${baseHref}`,
             parameters: [
@@ -46,25 +44,25 @@ export const GET = async (req: Request) => {
                 name: "title",
                 label: "Enter the title for the Job",
                 required: true,
-                type : 'text'
+                type: "text",
               },
               {
                 name: "description",
                 label: "Enter the job description",
                 required: true,
-                type : 'textarea'
+                type: "textarea",
               },
               {
                 name: "requirements",
                 label: "Enter job requirements",
                 required: true,
-                type :'textarea'
+                type: "textarea",
               },
               {
                 name: "amount",
                 label: "Enter the payment amount (in SOL)",
                 required: true,
-                type :'number'
+                type: "number",
               },
             ],
           },
@@ -145,12 +143,10 @@ export const POST = async (req: Request) => {
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
-        
         transaction,
         message:
           "Job posted successfully. Please go to https://upchain-delta.vercel.app/ to view job responses(NOTE: Login with the same wallet used for job creation)",
       },
-      
     });
 
     await axios.post(`${requestUrl.origin}/api/job/submit`, {
